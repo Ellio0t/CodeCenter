@@ -1,0 +1,204 @@
+<!-- START: WINIT CODE FRAGMENT (COPY ALL) -->
+<style>
+    /* ESTILOS DEL WIDGET (Incluidos aquí para asegurar que se vean bien) */
+    .winit-code-wrapper {
+        /* ⚙️ CONFIGURACIÓN DE COLORES (Edita esto para otro sitio) */
+        --main-color: #F33308;
+        /* Color Principal (Botón/Bordes) */
+        --main-color-hover: #F33308;
+        /* Color al pasar el mouse */
+        --text-font: 'Poppins', sans-serif;
+
+        font-family: var(--text-font);
+        margin: 30px auto;
+        display: table;
+        /* Truco infalible para ajustar al contenido */
+        width: auto;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* CAJA PRINCIPAL (Adaptable) */
+    .fragment-box {
+        background: #ffffff;
+        /* Fondo Blanco por defecto (Modo Caliente) */
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 12px 25px;
+        /* Más padding lateral */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+        /* IMPORTANTE: Espacio asegurado entre texto y botón */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    /* TEXTO DEL CÓDIGO (Monospace) */
+    .fragment-code {
+        font-family: 'Courier New', monospace;
+        font-size: 22px;
+        font-weight: 700;
+        color: #333333;
+        /* Texto oscuro por defecto */
+        letter-spacing: 1px;
+    }
+
+    /* BOTÓN COPY */
+    .fragment-btn {
+        background: var(--main-color);
+        color: #fff;
+        border: none;
+        font-family: var(--text-font);
+        font-weight: 800;
+        font-size: 14px;
+        padding: 10px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(16, 211, 78, 0.3);
+        /* Puedes ajustar la sombra si quieres */
+        text-transform: uppercase;
+        transition: transform 0.2s, background 0.2s;
+    }
+
+    .fragment-btn:hover {
+        background: var(--main-color-hover);
+        transform: scale(1.05);
+    }
+
+    .fragment-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* DATOS EXTRA (Expires / Timer) */
+    .fragment-meta {
+        margin-top: 5px;
+        /* Más compacto */
+        font-size: 13px;
+        color: #666;
+        display: flex;
+        flex-direction: row;
+        /* En fila para ahorrar espacio si hay más elementos */
+        align-items: center;
+        gap: 4px;
+        padding-left: 2px;
+    }
+
+    /* Ocultar la fecha gris explícita como pediste */
+    .expire-date {
+        display: none;
+    }
+
+    .meta-timer {
+        color: #ff3b30;
+        /* Rojo para urgencia */
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    /* --- MODO OSCURO / FRÍO (Automático si el body tiene clase .dark-mode) --- */
+    body.dark-mode .fragment-box {
+        background: #27272a;
+        /* Fondo Oscuro */
+        border-color: #3f3f46;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .fragment-code {
+        color: #ffffff;
+        /* Texto Blanco */
+    }
+
+    body.dark-mode .fragment-meta {
+        color: #aaa;
+    }
+
+    /* RESPONSIVE (Móvil) */
+    @media (max-width: 480px) {
+        .fragment-box {
+            flex-direction: column;
+            gap: 10px;
+            /* Menos espacio en móvil */
+            text-align: center;
+        }
+    }
+</style>
+
+<!-- HTML DEL WIDGET -->
+<div class="winit-code-wrapper">
+    <div class="fragment-box">
+        <!-- CÓDIGO (Aquí es donde n8n inyectará el valor) -->
+        <span class="fragment-code">{{ $json.code }}</span>
+        <!-- BOTÓN -->
+        <button class="fragment-btn">COPY</button>
+    </div>
+
+    <div class="fragment-meta">
+        <!-- Fecha Oculta -->
+        <span class="expire-date"></span>
+        <!-- TIMER -->
+        <span class="meta-timer">Ends in: ...</span>
+    </div>
+</div>
+
+<script>
+    // SCRIPT INTELIGENTE (Pégalo solo una vez por post o deja que se repita, no pasa nada)
+    (function () {
+        // Encuentra todos los widgets en el post
+        const widgets = document.querySelectorAll('.winit-code-wrapper');
+
+        widgets.forEach(widget => {
+            if (widget.classList.contains('initialized')) return; // Evitar doble inicio
+            widget.classList.add('initialized');
+
+            const btn = widget.querySelector('.fragment-btn');
+            const codeSpan = widget.querySelector('.fragment-code');
+            const timerSpan = widget.querySelector('.meta-timer');
+
+            // 1. Botón COPY
+            btn.onclick = function () {
+                navigator.clipboard.writeText(codeSpan.innerText).then(() => {
+                    const originalText = btn.innerText;
+                    btn.innerText = "COPIED!";
+                    btn.style.background = "#333";
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                        btn.style.background = "#10D34E";
+                    }, 2000);
+                });
+            };
+
+            // 2. Lógica de "Vence a Medianoche" (Daily Code)
+            // Esto configura la cuenta regresiva para las 23:59:59 del día ACTUAL.
+            const now = new Date();
+            const endDate = new Date();
+            endDate.setHours(23, 59, 59, 999); // Medianoche de hoy
+
+            // Si quieres que detecte una fecha real del post, necesitaríamos algo como:
+            // const postDate = new Date(document.querySelector('.published').innerText);
+            // Pero "Medianoche de Hoy" es lo más seguro para "WinIt Codes" diarios.
+
+            // Iniciar cuenta regresiva
+            const interval = setInterval(() => {
+                const current = new Date().getTime();
+                const distance = endDate - current;
+
+                if (distance < 0) {
+                    clearInterval(interval);
+                    timerSpan.innerText = "EXPIRED";
+                    timerSpan.style.color = "#999";
+                    widget.querySelector('.fragment-box').style.opacity = "0.6";
+                    widget.querySelector('.fragment-box').style.filter = "grayscale(100%)";
+                } else {
+                    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((distance % (1000 * 60)) / 1000);
+                    // Formato corto y compacto
+                    timerSpan.innerText = `Ends in: ${h}h ${m}m ${s}s`;
+                }
+            }, 1000);
+        });
+    })();
+</script>
+<!-- END WINIT CODE FRAGMENT -->

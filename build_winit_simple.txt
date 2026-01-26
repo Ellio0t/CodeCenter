@@ -1,0 +1,19 @@
+Running Gradle task 'bundleWinitRelease'...                     
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file 'C:\Users\etjeb\.gemini\antigravity\scratch\winit\android\app\build.gradle.kts' line: 47
+
+* What went wrong:
+SigningConfig with name 'winit' not found.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 5s
+Running Gradle task 'bundleWinitRelease'...                         5,9s
+Gradle task bundleWinitRelease failed with exit code 1

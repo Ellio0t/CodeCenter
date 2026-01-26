@@ -1,0 +1,32 @@
+﻿Launching lib\main.dart on M2101K6G in debug mode...
+Running Gradle task 'assembleDebug'...                          
+Loading key.properties from: C:\Users\etjeb\.gemini\antigravity\scratch\winit\android\key.properties
+Loaded keys: [storePassword, keyAlias, keyPassword, storeFile]
+Running Gradle task 'assembleDebug'...                              6,0s
+ΓêÜ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           7,1s
+E/AndroidRuntime(29546): FATAL EXCEPTION: main
+E/AndroidRuntime(29546): Process: com.andromo.dev717025.app1043119, PID: 29546
+E/AndroidRuntime(29546): java.lang.RuntimeException: Unable to instantiate activity ComponentInfo{com.andromo.dev717025.app1043119/com.andromo.dev717025.app1043119.MainActivity}: java.lang.ClassNotFoundException: Didn't find class "com.andromo.dev717025.app1043119.MainActivity" on path: DexPathList[[zip file "/data/app/~~eAFIlzfUA_fDIjSY82i6YA==/com.andromo.dev717025.app1043119-mvKsrrI3MqIAMjcQJ1oJ3w==/base.apk"],nativeLibraryDirectories=[/data/app/~~eAFIlzfUA_fDIjSY82i6YA==/com.andromo.dev717025.app1043119-mvKsrrI3MqIAMjcQJ1oJ3w==/lib/arm64, /data/app/~~eAFIlzfUA_fDIjSY82i6YA==/com.andromo.dev717025.app1043119-mvKsrrI3MqIAMjcQJ1oJ3w==/base.apk!/lib/arm64-v8a, /system/lib64, /system_ext/lib64]]
+E/AndroidRuntime(29546): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3737)
+E/AndroidRuntime(29546): 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3980)
+E/AndroidRuntime(29546): 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:101)
+E/AndroidRuntime(29546): 	at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)
+E/AndroidRuntime(29546): 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)
+E/AndroidRuntime(29546): 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2394)
+E/AndroidRuntime(29546): 	at android.os.Handler.dispatchMessage(Handler.java:106)
+E/AndroidRuntime(29546): 	at android.os.Looper.loopOnce(Looper.java:211)
+E/AndroidRuntime(29546): 	at android.os.Looper.loop(Looper.java:300)
+E/AndroidRuntime(29546): 	at android.app.ActivityThread.main(ActivityThread.java:8296)
+E/AndroidRuntime(29546): 	at java.lang.reflect.Method.invoke(Native Method)
+E/AndroidRuntime(29546): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:559)
+E/AndroidRuntime(29546): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+E/AndroidRuntime(29546): Caused by: java.lang.ClassNotFoundException: Didn't find class "com.andromo.dev717025.app1043119.MainActivity" on path: DexPathList[[zip file "/data/app/~~eAFIlzfUA_fDIjSY82i6YA==/com.andromo.dev717025.app1043119-mvKsrrI3MqIAMjcQJ1oJ3w==/base.apk"],nativeLibraryDirectories=[/data/app/~~eAFIlzfUA_fDIjSY82i6YA==/com.andromo.dev717025.app1043119-mvKsrrI3MqIAMjcQJ1oJ3w==/lib/arm64, /data/app/~~eAFIlzfUA_fDIjSY82i6YA==/com.andromo.dev717025.app1043119-mvKsrrI3MqIAMjcQJ1oJ3w==/base.apk!/lib/arm64-v8a, /system/lib64, /system_ext/lib64]]
+E/AndroidRuntime(29546): 	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:259)
+E/AndroidRuntime(29546): 	at java.lang.ClassLoader.loadClass(ClassLoader.java:642)
+E/AndroidRuntime(29546): 	at java.lang.ClassLoader.loadClass(ClassLoader.java:578)
+E/AndroidRuntime(29546): 	at android.app.AppComponentFactory.instantiateActivity(AppComponentFactory.java:95)
+E/AndroidRuntime(29546): 	at androidx.core.app.CoreComponentFactory.instantiateActivity(CoreComponentFactory.java:44)
+E/AndroidRuntime(29546): 	at android.app.Instrumentation.newActivity(Instrumentation.java:1360)
+E/AndroidRuntime(29546): 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3724)
+E/AndroidRuntime(29546): 	... 12 more

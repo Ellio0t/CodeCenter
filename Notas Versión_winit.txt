@@ -1,0 +1,57 @@
+v2.2.15 (2695)
+- Fixed "Money Back" Section: Title corrected to "CASHBACK" and filter optimized (Strict "Money" tag).
+- Reverted "Games" header color to Brand Green.
+- Profile Screen Redesign: Added collapsible Subscription groups and improved User Info card.
+- Critical Fix: Resolved App Freeze on Login (Improved Auth Flow & Timeout).
+- UI Tweaks: Reduced Login Card Opacity (30%) & Restored Poppins Font.
+- Notifications: Removed timestamp for cleaner look & added Emojis to identify Code/Cashback/Game alerts.
+
+v2.2.13 (2692)
+- Fixed Google Sign-In error visibility.
+- Fixed App Freeze on Login Screen (Timeout & Double-click protection).
+- Removed FAQs from Side Menu.
+- Default Guest Login: New users now enter as guests automatically.
+- Refined Settings UI: Updated text for FAQ section.
+
+v2.2.12 (2691)
+- Fixed Google Sign-In error visibility.
+- Fixed App Freeze on Login Screen (Timeout & Double-click protection).
+- Removed FAQs from Side Menu.
+
+v2.2.11 (2690)
+- Default Guest Login: New users now enter as guests automatically.
+- Refined Settings UI: Updated text for FAQ section.
+
+v2.2.10 (2689)
+- Added "Suggest a Site" to Home, Claim, and Notification screens.
+
+v2.2.9 (2688)
+- Added "Frequently Asked Questions" in Settings.
+- Cleaned up Drawer footer icons.
+
+v2.2.8 (2687)
+- Refined App Drawer: FAQs moved after Settings.
+- Added Help icon next to Info in drawer footer.no olvidalo 
+
+v2.2.7 (2686)
+- "Suggest a Site" feature now available in all Code/News sections (Footer).
+- Refined App Drawer: FAQs moved below Prime, smaller font.
+- Standardized UI for suggestion cards.
+
+v2.2.6 (2685)
+- Bumped version code to resolve upload conflict.
+- Added "Suggest a Site" feature in Profile.
+- Users can now submit new code sources directly from the app.
+- Backend support for site suggestions.
+
+v2.2.6 (2681)
+- Added "Suggest a Site" feature in Profile (Internal Build).
+
+v2.2.5 (2680)
+- Improved "Games" section logic.
+- Enhanced "Continue as Guest" visibility.
+- Refined App Drawer.
+
+v2.2.4 (2679)
+- Android 15 Edge-to-Edge support.
+- Fixed deprecated UI APIs.

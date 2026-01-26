@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "winit (Green)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": ["--flavor", "winit"]
+        },
+        {
+            "name": "perks (Red)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_perks.dart",
+            "args": ["--flavor", "perks"]
+        },
+        {
+            "name": "swag (Lime)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_swag.dart",
+            "args": ["--flavor", "swag"]
+        },
+        {
+            "name": "codblox (Dark - No Codes)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_codblox.dart",
+            "args": ["--flavor", "codblox"]
+        },
+        {
+            "name": "crypto (Blue - No Codes)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_crypto.dart",
+            "args": ["--flavor", "crypto"]
+        }
+    ]
+}

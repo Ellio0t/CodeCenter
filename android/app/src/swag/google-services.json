@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "541231221824",
+    "firebase_url": "https://swaggernaut-f3b74.firebaseio.com",
+    "project_id": "swaggernaut-f3b74",
+    "storage_bucket": "swaggernaut-f3b74.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541231221824:android:895adbe7f90c4dc8",
+        "android_client_info": {
+          "package_name": "net.andromo.dev717025.app859913"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "541231221824-50nior9j0hlensho82571l309ino47d3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.andromo.dev717025.app859913",
+            "certificate_hash": "e44763a669eae706121c8fc5370094659a310c9b"
+          }
+        },
+        {
+          "client_id": "541231221824-o03dq6p7urt1p7e8jspuklvtfftnb632.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHcMnekQJe_VF2sankN_-u0sSuMhHo16k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "541231221824-o03dq6p7urt1p7e8jspuklvtfftnb632.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "541231221824-3ta6fv38pm3r00bstuspa4p0nhhdg4av.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "net.andromo.dev717025.app859913"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-5133623535393963~7496321964"
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "172549727624",
+    "project_id": "airdropscryptos",
+    "storage_bucket": "airdropscryptos.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172549727624:android:a4b0b7d941dd54a968463d",
+        "android_client_info": {
+          "package_name": "com.newandromo.dev9693.app1383025"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvZlCQQNQD62LJ85jCBm7S88ZFVVeOMNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

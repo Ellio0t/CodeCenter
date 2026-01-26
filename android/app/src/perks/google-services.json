@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "801985982579",
+    "firebase_url": "https://point-perks.firebaseio.com",
+    "project_id": "point-perks",
+    "storage_bucket": "point-perks.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801985982579:android:df049c9dd4c30de33dba06",
+        "android_client_info": {
+          "package_name": "com.andromo.dev717025.app994579"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801985982579-ftq528nad6o285eagjlsk5necd3btecv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.andromo.dev717025.app994579",
+            "certificate_hash": "e44763a669eae706121c8fc5370094659a310c9b"
+          }
+        },
+        {
+          "client_id": "801985982579-gmm8gkoi2efkpiavggbsdjovl534f6q9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRgoM37ZisTC9ea_L4F-SuCYEBH7ahbkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801985982579-gmm8gkoi2efkpiavggbsdjovl534f6q9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "801985982579-6irokt9ho9aumt4ivkqq9obheo5gvder.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.andromo.dev717025.app994579"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-5133623535393963~6757723119"
+    }
+  ],
+  "configuration_version": "1"
+}

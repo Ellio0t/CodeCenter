@@ -1,0 +1,404 @@
+<!-- WINIT CODE WIDGET START -->
+<style>
+  /* Contenedor Principal */
+  .winit-code-widget {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Estilo de la Tarjeta */
+  .code-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    /* Sombra más sutil */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ESTILO PARA CÓDIGOS EXPIRADOS */
+  .code-card.expired-card {
+    background: #f0f0f0;
+    filter: grayscale(100%);
+    /* Todo en escala de grises */
+    opacity: 0.7;
+    border: 1px solid #ddd;
+    box-shadow: none;
+  }
+
+  /* Header: Título + Badge */
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .site-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #10D34E;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 65%;
+  }
+
+  .status-badge {
+    background: #fff;
+    border: 1px solid #10D34E;
+    color: #10D34E;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  /* Badge Expirado */
+  .expired-card .status-badge {
+    border-color: #999;
+    color: #999;
+    background: transparent;
+  }
+
+  /* Descripción */
+  .card-desc {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 10px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    /* Limitar a 2 líneas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Caja del Código */
+  .code-box-row {
+    display: flex;
+    gap: 8px;
+    background: #f0fff4;
+    /* Fondo verde muy claro */
+    padding: 6px 10px;
+    border-radius: 8px;
+    align-items: center;
+    border: 1px dashed #10D34E;
+    /* Borde punteado estilo cupón */
+    margin-bottom: 8px;
+    cursor: pointer;
+    /* Indicar clic */
+    transition: background 0.2s;
+  }
+
+  .code-box-row:hover {
+    background: #e0f9e6;
+  }
+
+  .expired-card .code-box-row {
+    background: #e0e0e0;
+    border-color: #ccc;
+    cursor: default;
+  }
+
+  .code-text {
+    flex-grow: 1;
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    font-size: 15px;
+    color: #333;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  /* Botón */
+  .copy-btn {
+    background: #10D34E;
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .expired-card .copy-btn {
+    background: #999;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* Footer: Timer */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    /* Alinear a la derecha */
+    gap: 4px;
+    font-size: 10px;
+    color: #ff3b30;
+    font-weight: 700;
+  }
+
+  .expired-card .card-footer {
+    color: #999;
+  }
+
+  /* Timer Icon (FontAwesome) */
+  .card-footer i {
+    font-size: 14px;
+    color: #ff3b30;
+    /* Rojo vibrante */
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  .expired-card .card-footer i {
+    color: #999;
+  }
+
+  .widget-loading {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    padding: 15px;
+  }
+
+  /* DARK MODE @OVERRIDES */
+  /* These will activate when 'body.dark-mode' class is present on the page */
+  body.dark-mode .winit-code-widget .code-card {
+    background: #27272a;
+    /* Match --bg-card */
+    border-color: rgba(255, 255, 255, 0.05);
+    /* Match --border-color */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    /* Match --shadow-color */
+  }
+
+  body.dark-mode .winit-code-widget .code-card.expired-card {
+    background: #18181b;
+    /* Match --bg-body */
+    border-color: #333;
+    opacity: 0.6;
+  }
+
+  body.dark-mode .winit-code-widget .site-name {
+    color: #34D54F;
+    /* Keep Accent */
+  }
+
+  body.dark-mode .winit-code-widget .card-desc {
+    color: #cecece;
+    /* Ligher text */
+  }
+
+  body.dark-mode .winit-code-widget .status-badge {
+    background: transparent;
+    color: #34D54F;
+    border-color: #34D54F;
+  }
+
+  body.dark-mode .winit-code-widget .expired-card .status-badge {
+    color: #777;
+    border-color: #555;
+  }
+
+  body.dark-mode .winit-code-widget .code-box-row {
+    background: rgba(52, 213, 79, 0.1);
+    /* Very dark green/transparent */
+    border-color: #34D54F;
+  }
+
+  body.dark-mode .winit-code-widget .code-box-row:hover {
+    background: rgba(52, 213, 79, 0.2);
+  }
+
+  body.dark-mode .winit-code-widget .code-text {
+    color: #fff;
+  }
+
+  body.dark-mode .winit-code-widget .copy-btn {
+    /* Button stays green, no change needed usually */
+  }
+
+  body.dark-mode .winit-code-widget .expired-card .code-box-row {
+    background: #333;
+    border-color: #444;
+  }
+
+  body.dark-mode .winit-code-widget .card-footer i {
+    /* Icon stays red unless expired */
+  }
+</style>
+
+<div id="winit-widget-container" class="winit-code-widget">
+  <div class="widget-loading">Loading Codes...</div>
+</div>
+
+<script>
+  //<![CDATA[
+  (function () {
+    // ==========================================
+    // ⚙️ CONFIGURACIÓN DEL WIDGET (Edita esto para otro sitio)
+    // ==========================================
+    const RSS_URL = 'https://www.winitcode.com/rss.xml'; // URL de tu Feed RSS
+
+    // Mapa de "Frase Clave" -> "Nombre a Mostrar"
+    const SITE_MAP = {
+      "winit code for inboxdollars": "InboxDollars",
+      "heycash": "HeyCash",
+      "hey cash": "HeyCash",
+      "prizerebel": "PrizeRebel",
+      "prize rebel": "PrizeRebel",
+      "freeward": "Freeward",
+      "freewardrewards": "Freeward",
+      "freeward rewards": "Freeward",
+      "lootup": "Lootup",
+      "loot up": "Lootup",
+      "gain.gg": "Gain",
+      "gain": "Gain",
+      "pixelpointtv": "PixelPointTV",
+      "pixelpoint tv": "PixelPointTV",
+      "pixel point tv": "PixelPointTV"
+      // Agrega más aquí...
+    };
+    // ==========================================
+
+    const CONTAINER = document.getElementById('winit-widget-container');
+
+    function getTimeLeft(endDate) {
+      const total = Date.parse(endDate) - Date.parse(new Date());
+      const seconds = Math.floor((total / 1000) % 60);
+      const minutes = Math.floor((total / 1000 / 60) % 60);
+      const hours = Math.floor((total / (1000 * 60 * 60)));
+      return { total, hours, minutes, seconds };
+    }
+
+    fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL))
+      .then(res => res.json())
+      .then(data => {
+        if (!data.items) throw new Error("No data");
+        CONTAINER.innerHTML = '';
+
+        const items = data.items.slice(0, 15);
+        let displayedCount = 0;
+
+        items.forEach(item => {
+          if (displayedCount >= 5) return;
+
+          const title = item.title;
+
+
+
+          let detectedSiteName = "WINIT CODE";
+          let isAllowed = false;
+          const lowerTitle = title.toLowerCase();
+
+          // Buscar coincidencia en el mapa
+          for (const [key, val] of Object.entries(SITE_MAP)) {
+            if (lowerTitle.includes(key)) {
+              isAllowed = true;
+              detectedSiteName = val; // Guardamos el nombre "Bonito"
+              break;
+            }
+          }
+
+          if (!isAllowed) {
+            return;
+          }
+
+          displayedCount++;
+          const link = item.link;
+
+          // Expiración Inteligente (Basada en Fecha de Publicación)
+          // La regla es: "Vence a la medianoche del día que se publicó".
+          // Si el post es de hoy -> ACTIVO hasta las 23:59.
+          // Si el post es de ayer -> EXPIRADO.
+
+          let pubDate = new Date(item.pubDate);
+          let expiryDate = new Date(pubDate);
+          expiryDate.setHours(23, 59, 59, 999); // Medianoche del día de publicación
+
+          const now = new Date();
+          const isExpiredInitially = now > expiryDate;
+
+          const displayCode = "VER CÓDIGO";
+
+          const card = document.createElement('div');
+          card.className = 'code-card' + (isExpiredInitially ? ' expired-card' : '');
+          card.innerHTML = `
+          <div class="card-header">
+            <span class="site-name">${detectedSiteName}</span>
+            <span class="status-badge">${isExpiredInitially ? 'EXPIRED' : 'ACTIVE'}</span>
+          </div>
+          <div class="card-desc">${title}</div>
+          
+          <div class="code-box-row" onclick="window.open('${link}', '_blank')" title="Clic para ver código">
+            <span class="code-text">${displayCode}</span>
+            <button class="copy-btn">IR</button>
+          </div>
+          
+          <div class="card-footer">
+            <!-- Usamos FontAwesome que SI tienes instalado -->
+            <i class="fa-solid fa-stopwatch"></i>
+            <span id="timer-${link.slice(-8)}">
+              ${isExpiredInitially ? 'Finalizado' : 'Calculando...'}
+            </span>
+          </div>
+        `;
+
+          CONTAINER.appendChild(card);
+
+          if (!isExpiredInitially) {
+            const tId = link.slice(-8);
+            // Timer Logic
+            const interval = setInterval(() => {
+              const t = getTimeLeft(expiryDate);
+              const el = document.getElementById(`timer-${tId}`);
+
+              if (el) {
+                if (t.total <= 0) {
+                  clearInterval(interval);
+                  el.innerHTML = "Finalizado";
+                  const parentCard = el.closest('.code-card');
+                  if (parentCard) {
+                    parentCard.classList.add('expired-card');
+                    parentCard.querySelector('.status-badge').innerText = "EXPIRED";
+                    const row = parentCard.querySelector('.code-box-row');
+                    if (row) {
+                      row.onclick = null;
+                      row.style.cursor = 'default';
+                      row.querySelector('.copy-btn').style.background = '#999';
+                    }
+                  }
+                } else {
+                  el.innerHTML = `${t.hours}h ${t.minutes}m`;
+                }
+              }
+            }, 1000);
+          }
+        });
+
+        if (displayedCount === 0) {
+          CONTAINER.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">No Active Codes Found</div>';
+        }
+      })
+      .catch(err => {
+        CONTAINER.innerHTML = '';
+        console.error(err);
+      });
+  })();
+  //]]>
+</script>
+<!-- WINIT CODE WIDGET END -->
