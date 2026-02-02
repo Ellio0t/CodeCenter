@@ -42,7 +42,9 @@ lib/firebase_options.dart
 *.pem
 *.p12
 key.properties
+key_*.properties
 winit_key_info.txt
+
 
 # Log files
 *_log.txt
