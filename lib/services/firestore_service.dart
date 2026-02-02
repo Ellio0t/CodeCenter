@@ -38,8 +38,34 @@ class FirestoreService {
               databaseURL: options.databaseURL,
               storageBucket: options.storageBucket,
             );
+         } else if (flavor == AppFlavor.swag) {
+             options = FirebaseOptions(
+              apiKey: options.apiKey, // Using generic API Key from winitcode
+              appId: '1:66500442999:android:2eff0b7d8f9e9ede8c3f72', // Swag App ID
+              messagingSenderId: options.messagingSenderId,
+              projectId: options.projectId,
+              databaseURL: options.databaseURL,
+              storageBucket: options.storageBucket,
+            );
+         } else if (flavor == AppFlavor.codblox) {
+             options = FirebaseOptions(
+              apiKey: options.apiKey,
+              appId: '1:66500442999:android:d541a20a96bb8a2d8c3f72', // Codblox App ID
+              messagingSenderId: options.messagingSenderId,
+              projectId: options.projectId,
+              databaseURL: options.databaseURL,
+              storageBucket: options.storageBucket,
+            );
+         } else if (flavor == AppFlavor.crypto) {
+             options = FirebaseOptions(
+              apiKey: options.apiKey,
+              appId: '1:66500442999:android:f6b454661662f6be8c3f72', // Crypto App ID
+              messagingSenderId: options.messagingSenderId,
+              projectId: options.projectId,
+              databaseURL: options.databaseURL,
+              storageBucket: options.storageBucket,
+            );
          }
-         // Future: Add Swag, Codblox, etc. here once registered
       }
 
       final masterApp = await Firebase.initializeApp(
