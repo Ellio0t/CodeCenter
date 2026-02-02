@@ -15,8 +15,21 @@ exports.sendNewCodeNotification = functions.firestore
     }
 
     const siteName = data.siteName || "Unknown Site";
-    // const codeValue = data.codeValue || "No Code"; // Unused in notification body currently
-    const flavor = data.flavor ? data.flavor.toLowerCase() : "winit"; // Default to winit if missing
+    const siteNameLower = siteName.toLowerCase();
+    
+    // Default flavor or existing
+    let flavor = data.flavor ? data.flavor.toLowerCase() : "winit"; 
+
+    // INTELLIGENT ROUTING: Setup correct flavor based on Site Name if default winit was used or to ensure routing
+    if (siteNameLower.includes("mypoints") || siteNameLower.includes("perk")) {
+       flavor = "perks";
+    } else if (siteNameLower.includes("swagbuck")) {
+       flavor = "swag";
+    } else if (siteNameLower.includes("codblox") || siteNameLower.includes("roblox")) {
+       flavor = "codblox";
+    } else if (siteNameLower.includes("crypto") || siteNameLower.includes("bitcoin")) {
+       flavor = "crypto";
+    }
 
     // Determine Topic and Type based on content
     let topic = "new_codes";
@@ -24,7 +37,6 @@ exports.sendNewCodeNotification = functions.firestore
 
     // Check for explicit label/category or infer from siteName
     const label = (data.label || data.category || "").toString().toLowerCase();
-    const siteNameLower = siteName.toLowerCase();
 
     if (label.includes("money") || siteNameLower.includes("money back") || siteNameLower.includes("cashback")) {
       topic = "money_back";
@@ -39,12 +51,23 @@ exports.sendNewCodeNotification = functions.firestore
       }
     }
 
-    // Common Promo Image (Green WinIt Logo)
+    // Dynamic Title based on Flavor
+    const appTitles = {
+        "winit": "WinIt Code Center",
+        "perks": "Perks Code Center",
+        "swag": "Swag Code Center",
+        "codblox": "CodBlox Code Center",
+        "crypto": "Crypto Code Center"
+    };
+    
+    const notificationTitle = appTitles[flavor] || "Code Center";
+
+    // Common Promo Image (Green WinIt Logo) - Consider making this dynamic later
     const promoImage = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgUo7RQZp3ciVbcBdBQLHOpna7750wrFMX-67uNP5Ao2PJY4XzadlZ3UDnbjbUEVhwBGwP4gMAs4aRnlR9YrwIShLOcUEJEkyxvpJMxat2ND_N3_mNKfMYqfYT680ZcCiNb0SU_1qX6dZbVf8Mhgnxi1IbOzwWGAk42igyHwtNcETFqUx-gUSzga_hQ1G9T/s16000/winitbig.png";
 
     const payload = {
       notification: {
-        title: "WinIt Code Center",
+        title: notificationTitle,
         body: `New update for ${siteName}! Check it out now!`,
       },
       data: {
