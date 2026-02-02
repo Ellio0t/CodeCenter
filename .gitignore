@@ -36,6 +36,21 @@ migrate_working_dir/
 # Firebase config (Security)
 lib/firebase_options.dart
 
+# Keystores and Certificates (CRITICAL SECURITY)
+*.jks
+*.keystore
+*.pem
+*.p12
+key.properties
+winit_key_info.txt
+
+# Log files
+*_log.txt
+run_debug_std.txt
+crash_log_utf8.txt
+analysis*.txt
+
+
 # Symbolication related
 app.*.symbols
 
