@@ -61,4 +61,4 @@ flutter run --flavor winit -t lib/main_winit.dart
 
 ---
 
-**Developed by Elliot Barrios**
+**Developed by El|iot**
