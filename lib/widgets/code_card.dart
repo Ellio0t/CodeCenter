@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../services/ad_service.dart';
 import 'package:provider/provider.dart';
 import '../providers/prime_provider.dart';
+import '../config/app_config.dart';
 
 class CodeCard extends StatefulWidget {
   final CashbackCode cashbackCode;
@@ -118,7 +119,7 @@ class _CodeCardState extends State<CodeCard> {
                   widget.cashbackCode.siteName,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: _isExpired ? Colors.grey : const Color(0xFF10D34E),
+                        color: _isExpired ? Colors.grey : AppConfig.shared.primaryColor,
                       ),
                 ),
                 _isExpired
@@ -129,14 +130,14 @@ class _CodeCardState extends State<CodeCard> {
                           color: isDark ? Colors.black87 : Colors.white, // Black for Neon, White for Light
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: isDark ? const Color(0xFF39FF14) : const Color(0xFF10D34E),
+                            color: isDark ? AppConfig.shared.primaryColor : AppConfig.shared.primaryColor,
                             width: 1,
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: isDark 
-                                  ? const Color(0xFF39FF14).withOpacity(0.5) 
-                                  : const Color(0xFF10D34E).withOpacity(0.3),
+                                  ? AppConfig.shared.primaryColor.withOpacity(0.5) 
+                                  : AppConfig.shared.primaryColor.withOpacity(0.3),
                               blurRadius: 8,
                               spreadRadius: 1,
                             ),
@@ -145,12 +146,12 @@ class _CodeCardState extends State<CodeCard> {
                         child: Text(
                           'ACTIVE',
                           style: TextStyle(
-                            color: isDark ? const Color(0xFF39FF14) : const Color(0xFF10D34E),
+                            color: isDark ? AppConfig.shared.primaryColor : AppConfig.shared.primaryColor,
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
                             shadows: isDark ? [
-                              const Shadow(
-                                color: Color(0xFF39FF14),
+                              Shadow(
+                                color: AppConfig.shared.primaryColor,
                                 blurRadius: 4,
                               ),
                             ] : [], // Clean text for light mode
@@ -245,8 +246,8 @@ class _CodeCardState extends State<CodeCard> {
                           decoration: BoxDecoration(
                             gradient: _isExpired 
                                 ? null 
-                                : const LinearGradient(
-                                    colors: [Color(0xFF00E676), Color(0xFF10D34E)], // More vibrant green
+                                : LinearGradient(
+                                    colors: [AppConfig.shared.primaryColor, AppConfig.shared.primaryColor], // More vibrant color
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
@@ -254,7 +255,7 @@ class _CodeCardState extends State<CodeCard> {
                             borderRadius: BorderRadius.circular(12), // Match card roundness style
                             boxShadow: _isExpired ? [] : [
                               BoxShadow(
-                                color: const Color(0xFF10D34E).withOpacity(0.4),
+                                color: AppConfig.shared.primaryColor.withOpacity(0.4),
                                 blurRadius: 8, // Softer glow
                                 offset: const Offset(0, 4),
                               ),
@@ -310,3 +311,5 @@ class _CodeCardState extends State<CodeCard> {
     );
   }
 }
+
+

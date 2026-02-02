@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/custom_header.dart';
-import '../widgets/header_actions.dart';
+import '../config/app_config.dart';
 
 class FaqScreen extends StatelessWidget {
   const FaqScreen({super.key});
@@ -47,72 +46,103 @@ class FaqScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
+    final appName = AppConfig.shared.appName;
+    
     return Scaffold(
-      body: Column(
-        children: [
-          CustomHeader(
-            title: 'FAQs',
-            actions: buildHeaderActions(context),
-          ),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: faqs.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                return _buildFaqCard(context, faqs[index], isDarkMode);
-              },
+      appBar: AppBar(
+        title: const Text('Frequently Questions'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Frequently Asked Questions',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              'Find answers to common questions about $appName.',
+              style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            
+            // Map FAQs to Section widgets
+            ...faqs.map((faq) => _buildSection(
+              context,
+              faq['question']!,
+              faq['answer']!,
+            )),
+            
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildFaqCard(BuildContext context, Map<String, String> faq, bool isDarkMode) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          if (!isDarkMode)
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-        ],
-        border: isDarkMode ? Border.all(color: Colors.white10) : null,
-      ),
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          iconColor: isDarkMode ? Colors.white : Colors.black87,
-          collapsedIconColor: isDarkMode ? Colors.white70 : Colors.black54,
-          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          title: Text(
-            faq['question']!,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: isDarkMode ? Colors.white : const Color(0xFF2D3436),
-            ),
-          ),
-          children: [
-            Text(
-              faq['answer']!,
-              style: TextStyle(
-                fontSize: 14,
-                height: 1.5,
-                color: isDarkMode ? Colors.grey[300] : const Color(0xFF636E72),
-              ),
-            ),
+  Widget _buildSection(BuildContext context, String title, String content) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isDark ? Colors.white12 : Colors.grey.withOpacity(0.2)),
+          boxShadow: [
+             if (!isDark)
+               BoxShadow(
+                 color: Colors.black.withOpacity(0.05),
+                 blurRadius: 10,
+                 offset: const Offset(0, 4),
+               ),
           ],
         ),
+        child: Theme(
+          data: TempThemeData.expansionTileTheme(context), 
+          child: ExpansionTile(
+            title: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+            iconColor: AppConfig.shared.primaryColor,
+            collapsedIconColor: isDark ? Colors.white70 : Colors.black54,
+            tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            shape: const Border(), // Remove default dividers
+            collapsedShape: const Border(),
+            children: [
+              Text(
+                content,
+                style: TextStyle(
+                  height: 1.5,
+                  fontSize: 14,
+                  color: isDark ? Colors.white70 : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Helper to remove divider lines from ExpansionTile in newer Flutter versions without affecting global theme if not set
+class TempThemeData {
+  static ThemeData expansionTileTheme(BuildContext context) {
+    return Theme.of(context).copyWith(
+      dividerColor: Colors.transparent,
+      listTileTheme: ListTileThemeData(
+         dense: true, 
+         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

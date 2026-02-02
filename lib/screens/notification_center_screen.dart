@@ -9,6 +9,7 @@ import '../widgets/code_card.dart';
 import '../providers/prime_provider.dart';
 import '../services/ad_helper.dart';
 import '../widgets/suggest_site_card.dart';
+import 'settings_screen.dart';
 
 class NotificationCenterScreen extends StatefulWidget {
   const NotificationCenterScreen({super.key});
@@ -84,6 +85,18 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
       appBar: AppBar(
         title: const Text('Notifications'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: "Notification Settings",
+            onPressed: () {
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<List<CashbackCode>>(
         stream: FirestoreService().getCodes(),
@@ -105,7 +118,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen> {
              if (expiration.hour == 0 && expiration.minute == 0 && expiration.second == 0) {
                 expiration = DateTime(expiration.year, expiration.month, expiration.day, 23, 59, 59);
              }
-             return expiration.isAfter(now);
+             return expiration.isAfter(now) && !code.siteName.trim().contains(' ');
           }).toList();
 
           if (activeCodes.isEmpty) {

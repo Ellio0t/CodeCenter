@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config/app_config.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -14,12 +15,33 @@ class SplashScreen extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           // 1. Centered Logo (Smiley)
+          // 1. Centered Logo (Smiley)
           Center(
-            child: Image.asset(
-              'images/smiley.png',
-              width: 135, // Slightly increased from 120
-              height: 135,
-              fit: BoxFit.contain,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // The Glow
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppConfig.shared.primaryColor.withOpacity(0.6),
+                        blurRadius: 60,
+                        spreadRadius: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                Image.asset(
+                  AppConfig.shared.logoImage, // Dynamic Logo
+                  width: 135, 
+                  height: 135,
+                  fit: BoxFit.contain,
+                ),
+              ],
             ),
           ),
 
@@ -42,8 +64,8 @@ class SplashScreen extends StatelessWidget {
                 const SizedBox(height: 0), // Minimal spacing to keep them close but not overlapping
                 // Elliot Logo
                 Image.asset(
-                  'images/elliot.png',
-                  height: 45, // Adjusted height (3x larger)
+                  AppConfig.shared.elliotLogoImage,
+                  height: 30, // Adjusted height
                   fit: BoxFit.contain,
                 ),
               ],

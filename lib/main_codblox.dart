@@ -12,6 +12,9 @@ void main() async {
     rssUrl: "https://feeds.feedburner.com/codblox",
     drawerImage: "images/roblox_drawer.png",
     logoImage: "images/roblox-app.png",
+    primeImage: "images/roblox-app.png",
+    elliotLogoImage: "images/elliot_codblox.png",
+    designerColor: const Color(0xFF69F0AE), // Green Accent
   );
 
   await mainCommon();

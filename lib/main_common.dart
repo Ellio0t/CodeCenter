@@ -18,8 +18,18 @@ import 'config/app_config.dart'; // Import AppConfig
 
 Future<void> mainCommon() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // On Android/iOS, we rely on the native GoogleService-Info.plist / google-services.json
+  // which are flavor-specific. Passing 'options' overrides this with the default (Winit) config.
+  // We only use the Dart-configured options for Web/Desktop.
+  FirebaseOptions? options;
+  if (kIsWeb || defaultTargetPlatform == TargetPlatform.windows || 
+      defaultTargetPlatform == TargetPlatform.linux || 
+      defaultTargetPlatform == TargetPlatform.macOS) {
+    options = DefaultFirebaseOptions.currentPlatform;
+  }
+
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: options,
   );
 
   // Enable Edge-to-Edge for Android 15 compliance
@@ -91,12 +101,9 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         if (kDebugMode) print('FCM Token: $token');
       });
 
-      // Poll for App Open Ad availability
-      int attempts = 0;
-      while (!AdService().isAdAvailable && attempts < 20) {
-        await Future.delayed(const Duration(milliseconds: 200));
-        attempts++;
-      }
+      // Poll for App Open Ad availability REMOVED for speed
+      // int attempts = 0;
+      // while (!AdService().isAdAvailable && attempts < 20) { ... }
 
       if (mounted) {
         final isPrime = Provider.of<PrimeProvider>(context, listen: false).isPrime;
@@ -106,14 +113,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       }
     }
     
-    // Auto-login as Guest if not authenticated
+    // Auto-login as Guest if not authenticated - Fire and forget for speed
     final authService = AuthService();
     if (authService.currentUser == null) {
-      try {
-        await authService.signInAnonymously();
-      } catch (e) {
+       authService.signInAnonymously().catchError((e) {
         debugPrint("Error auto-signing in as guest: $e");
-      }
+      });
     }
   }
 
@@ -175,9 +180,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         future: _appInitFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (user == null) {
-              return const LoginScreen();
-            }
+            // Updated: Always go to HomeScreen (Guest Mode supported)
             return HomeScreen();
           }
           return const SplashScreen();

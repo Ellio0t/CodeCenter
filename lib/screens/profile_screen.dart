@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -9,6 +9,7 @@ import '../services/firestore_service.dart';
 import 'suggest_site_screen.dart';
 import '../widgets/suggest_site_card.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../config/app_config.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -132,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFF10D34E)),
+          Icon(icon, size: 20, color: AppConfig.shared.primaryColor),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,12 +201,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                    CircleAvatar(
                     radius: 40,
-                    backgroundColor: const Color(0xFF10D34E).withOpacity(0.2),
+                    backgroundColor: AppConfig.shared.primaryColor.withOpacity(0.2),
                     backgroundImage: user.photoURL != null ? NetworkImage(user.photoURL!) : null,
                     child: user.photoURL == null
                         ? Text(
                             (user.displayName ?? user.email ?? "U")[0].toUpperCase(),
-                            style: const TextStyle(fontSize: 32, color: Color(0xFF10D34E), fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 32, color: AppConfig.shared.primaryColor, fontWeight: FontWeight.bold),
                           )
                         : null,
                   ),
@@ -334,3 +335,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+

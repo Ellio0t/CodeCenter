@@ -1,0 +1,26 @@
+Nombre de Alias: winit
+Fecha de Creaci?n: 1 ene 2026
+Tipo de Entrada: PrivateKeyEntry
+Longitud de la Cadena de Certificado: 1
+Certificado[1]:
+Propietario: CN=Elliot Barrios, OU=CodesWin, O=WinIt, L=Buenos Aires, ST=Capital Federal, C=AR
+Emisor: CN=Elliot Barrios, OU=CodesWin, O=WinIt, L=Buenos Aires, ST=Capital Federal, C=AR
+N?mero de serie: 7725883bb8a95a08
+V?lido desde: Thu Jan 01 09:03:44 VET 2026 hasta: Mon May 19 09:03:44 VET 2053
+Huellas digitales del certificado:
+	 SHA1: 5C:90:09:25:A1:B2:D8:CF:24:68:72:81:A5:F0:AE:DC:2D:5A:F8:FA
+	 SHA256: 43:74:C3:45:15:C7:AA:27:5B:EC:14:0B:95:4A:A6:FD:10:61:10:73:54:52:C1:9C:BE:44:03:5F:14:8B:FD:62
+Nombre del algoritmo de firma: SHA384withRSA
+Algoritmo de clave p?blica de asunto: Clave RSA de 2048 bits
+Versi?n: 3
+
+Extensiones: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 1C C8 82 F0 C2 09 D7 DF   20 B1 FE 6F 16 FF 91 3C  ........ ..o...<
+0010: DB E3 FA 15                                        ....
+]
+]
+

@@ -1,9 +1,10 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../services/auth_service.dart';
 import '../config/app_config.dart';
+import 'contact_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -69,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
+    final isPerks = AppConfig.shared.flavor == AppFlavor.perks;
     
     return Scaffold(
       body: Stack(
@@ -96,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF10D34E).withOpacity(0.3),
+                  color: AppConfig.shared.primaryColor.withOpacity(0.3),
                 ),
               ),
             ),
@@ -111,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 250,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF00E676).withOpacity(0.2),
+                  color: AppConfig.shared.primaryColor.withOpacity(0.2),
                 ),
               ),
             ),
@@ -166,10 +168,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           margin: const EdgeInsets.only(top: 4),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFF10D34E).withOpacity(0.2),
-                            border: Border.all(color: const Color(0xFF10D34E), width: 2),
+                            color: AppConfig.shared.primaryColor.withOpacity(0.2),
+                            border: Border.all(color: AppConfig.shared.primaryColor, width: 2),
                             boxShadow: [
-                              BoxShadow(color: const Color(0xFF10D34E).withOpacity(0.4), blurRadius: 16),
+                              BoxShadow(color: AppConfig.shared.primaryColor.withOpacity(0.4), blurRadius: 16),
                             ]
                           ),
                           child: Image.asset(
@@ -182,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         
                         const SizedBox(height: 16), 
                         Text(
-                          "Welcome Back",
+                          isPerks ? "Welcome Back" : "Welcome",
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith( 
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.0,
@@ -191,7 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         
                         const SizedBox(height: 4), 
                         Text(
-                          "Sign in to access exclusive codes and cashback",
+                          isPerks 
+                              ? "Sign in to access exclusive codes and cashback" 
+                              : "Sign in to continue",
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith( 
                             color: Colors.grey,
@@ -244,10 +248,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _onEmailLoginPressed, // Use validated handler
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF10D34E),
+                              backgroundColor: AppConfig.shared.primaryColor,
                               foregroundColor: Colors.white,
                               elevation: 8,
-                              shadowColor: const Color(0xFF10D34E).withOpacity(0.5),
+                              shadowColor: AppConfig.shared.primaryColor.withOpacity(0.5),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             child: _isLoading 
@@ -277,6 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 16), 
 
+                        // Social Buttons
                         // Social Buttons
                         InkWell(
                           onTap: () => _handleLogin(_authService.signInWithGoogle),
@@ -327,11 +332,11 @@ class _LoginScreenState extends State<LoginScreen> {
                            child: Text(
                              "Continue as Guest",
                              style: TextStyle(
-                               color: const Color(0xFF10D34E),
+                               color: AppConfig.shared.primaryColor,
                                fontSize: 15, 
                                fontWeight: FontWeight.bold,
                                decoration: TextDecoration.underline,
-                               decorationColor: const Color(0xFF10D34E),
+                               decorationColor: AppConfig.shared.primaryColor,
                              ),
                            ),
                         ),
@@ -345,10 +350,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             Text("Don't have an account? ", style: TextStyle(color: isDark ? Colors.white60 : Colors.black54, fontSize: 12)),
                             GestureDetector(
                               onTap: () => {}, // TODO: Implement Toggle Sign Up
-                              child: const Text(
+                              child: Text(
                                 "Sign Up",
                                 style: TextStyle(
-                                  color: Color(0xFF10D34E),
+                                  color: AppConfig.shared.primaryColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -366,27 +371,25 @@ class _LoginScreenState extends State<LoginScreen> {
           // 3. Bottom Text/Logo "from Elliot" (Hidden when keyboard is open)
           if (MediaQuery.of(context).viewInsets.bottom == 0)
             Positioned(
-              bottom: 30, // Slightly lower than splash to avoid keyboard interference initially
+              bottom: 30, 
               left: 0,
               right: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'from',
+              child: Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ContactScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Contact Support',
                     style: TextStyle(
                       color: Colors.grey, 
-                      fontSize: 11,
-                      letterSpacing: 1.2,
+                      fontSize: 12,
                     ),
                   ),
-                  const SizedBox(height: 0),
-                  Image.asset(
-                    'images/elliot.png',
-                    height: 45, 
-                    fit: BoxFit.contain,
-                  ),
-                ],
+                ),
               ),
             ),
         ],
@@ -414,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.black38, fontSize: 13), // Reduced font
-          prefixIcon: Icon(icon, color: const Color(0xFF10D34E), size: 20), // Reduced icon
+          prefixIcon: Icon(icon, color: AppConfig.shared.primaryColor, size: 20), // Reduced icon
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Reduced vertical padding
           isDense: true,
@@ -444,3 +447,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+

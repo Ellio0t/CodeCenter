@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../services/firestore_service.dart';
+import '../config/app_config.dart';
 
 class SuggestSiteScreen extends StatefulWidget {
   const SuggestSiteScreen({super.key});
@@ -32,7 +33,7 @@ class _SuggestSiteScreenState extends State<SuggestSiteScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Thanks! Your suggestion has been sent.'),
-            backgroundColor: Color(0xFF10D34E),
+            backgroundColor: Color(0xFF00C853), // Success Green (Fixed for success messages) or Primary
           ),
         );
         Navigator.pop(context);
@@ -80,13 +81,13 @@ class _SuggestSiteScreenState extends State<SuggestSiteScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF10D34E).withOpacity(0.1),
+                  color: AppConfig.shared.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF10D34E).withOpacity(0.3)),
+                  border: Border.all(color: AppConfig.shared.primaryColor.withOpacity(0.3)),
                 ),
                 child: Row(
                   children: [
-                    const FaIcon(FontAwesomeIcons.lightbulb, color: Color(0xFF10D34E), size: 24),
+                    FaIcon(FontAwesomeIcons.lightbulb, color: AppConfig.shared.primaryColor, size: 24),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Text(
@@ -144,10 +145,10 @@ class _SuggestSiteScreenState extends State<SuggestSiteScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitSuggestion,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10D34E),
+                    backgroundColor: AppConfig.shared.primaryColor,
                     foregroundColor: Colors.white,
                     elevation: 4,
-                    shadowColor: const Color(0xFF10D34E).withOpacity(0.4),
+                    shadowColor: AppConfig.shared.primaryColor.withOpacity(0.4),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: _isLoading
@@ -204,10 +205,11 @@ class _SuggestSiteScreenState extends State<SuggestSiteScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF10D34E), width: 1.5),
+          borderSide: BorderSide(color: AppConfig.shared.primaryColor, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
     );
   }
 }
+

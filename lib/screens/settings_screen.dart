@@ -5,6 +5,9 @@ import '../services/firestore_service.dart';
 import '../services/auth_service.dart';
 import 'about_screen.dart';
 import '../screens/faq_screen.dart';
+import '../config/app_config.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,9 +24,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _moneyBackEnabled = true;
   bool _gamesEnabled = true;
 
-  // Group 2: Codes (Dynamic Providers)
+  // Group 3: Codes (Dynamic Providers)
   List<String> _providers = [];
   final Map<String, bool> _subscriptions = {};
+  
+  // Categorization
+  List<String> _singleNames = [];
   bool _isLoading = true;
 
   @override
@@ -48,10 +54,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _providers = [];
     }
 
-    // 3. Load Subscription States
+    // 3. Categorize & Load States
+    _singleNames.clear();
+
     for (var provider in _providers) {
+      // Logic: Only single word providers for automatic subscription
+      if (provider.trim().contains(' ')) continue;
+
+      // Filter for Winit: Exclude other app flavors
+      if (AppConfig.shared.isWinit) {
+        final lower = provider.toLowerCase();
+        if (lower.contains('perk') || 
+            lower.contains('swag') || 
+            lower.contains('codblox') || 
+            lower.contains('roblox') || // encompassing codblox usually
+            lower.contains('crypto')) {
+          continue;
+        }
+      }
+
+      // Load individual state
       final key = _getPrefKey(provider);
-      _subscriptions[provider] = prefs.getBool(key) ?? true;
+      final isSubscribed = prefs.getBool(key) ?? true;
+      _subscriptions[provider] = isSubscribed;
+
+      _singleNames.add(provider);
     }
 
     if (mounted) {
@@ -64,6 +91,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _getTopic(String provider) => 'topic_${provider.replaceAll(RegExp(r'\s+'), '').toLowerCase()}';
 
   Future<void> _toggleMasterSwitch(bool value) async {
+    // ... (Existing logic) ...
+    // Note: Re-implementing simplified version to respect new groups if needed, 
+    // but existing logic iterates _providers which is fine.
+    // Preserving existing logic logic structure via complete replacement of the block to be safe.
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _notificationsEnabled = value;
@@ -71,21 +102,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await prefs.setBool('notifications_enabled', value);
 
     if (value) {
-      // Re-subscribe to everything enabled
       if (_moneyBackEnabled) NotificationService().subscribeToTopic('money_back');
       if (_gamesEnabled) NotificationService().subscribeToTopic('game_center');
       
-      for (var provider in _providers) {
+      for (var provider in _singleNames) {
         if (_subscriptions[provider] == true) {
           NotificationService().subscribeToTopic(_getTopic(provider));
         }
       }
-      NotificationService().subscribeToTopic('new_codes'); // Always sub to general
+      NotificationService().subscribeToTopic('new_codes');
     } else {
-      // Unsubscribe from EVERYTHING
       NotificationService().unsubscribeFromTopic('money_back');
       NotificationService().unsubscribeFromTopic('game_center');
-      for (var provider in _providers) {
+      for (var provider in _singleNames) {
         NotificationService().unsubscribeFromTopic(_getTopic(provider));
       }
       NotificationService().unsubscribeFromTopic('new_codes');
@@ -135,8 +164,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  // _toggleGroup Removed
+
   Widget _buildGroupTile(BuildContext context, String title, IconData icon, List<Widget> children, {bool initiallyExpanded = false}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+     // ... (Existing implementation kept via context, no changes needed to helper usually, but providing for completeness if tool replaces block)
+     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Container(
@@ -163,6 +195,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
     final isGuest = AuthService().currentUser?.isAnonymous ?? false;
+    final isPerks = AppConfig.shared.flavor == AppFlavor.perks;
 
     return Scaffold(
       appBar: AppBar(
@@ -175,7 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.all(16),
               children: [
                 // MASTER SWITCH
-                Container(
+                 Container(
                   decoration: BoxDecoration(
                     color: isDark ? Colors.grey[900] : Colors.grey[100],
                     borderRadius: BorderRadius.circular(16),
@@ -221,28 +254,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Column(
                         children: [
                           // GROUP 1: CASHBACK
-                          _buildGroupTile(context, 'CASHBACK', Icons.monetization_on_rounded, [
-                             SwitchListTile(
-                              title: const Text('Money Back'), // Removed 'Alerts'
-                              value: _moneyBackEnabled,
-                              activeColor: primaryColor,
-                              onChanged: _toggleMoneyBack,
-                            ),
-                          ]),
+                          if (isPerks)
+                            _buildGroupTile(context, 'CASHBACK', Icons.monetization_on_rounded, [
+                               SwitchListTile(
+                                 title: const Text('Money Back'), 
+                                 value: _moneyBackEnabled,
+                                 activeColor: primaryColor,
+                                 onChanged: _toggleMoneyBack,
+                               ),
+                            ]),
 
                           // GROUP 2: GAMES
-                          _buildGroupTile(context, 'GAMES', Icons.games_rounded, [
-                            SwitchListTile(
-                              title: const Text('Game Center'), // Removed 'Alerts'
-                              value: _gamesEnabled,
-                              activeColor: primaryColor,
-                              onChanged: _toggleGames,
-                            ),
-                          ]),
+                          if (isPerks)
+                            _buildGroupTile(context, 'GAMES', Icons.games_rounded, [
+                              SwitchListTile(
+                                title: const Text('Game Center'), 
+                                value: _gamesEnabled,
+                                activeColor: primaryColor,
+                                onChanged: _toggleGames,
+                              ),
+                            ]),
 
                           // GROUP 3: CODES
-                          _buildGroupTile(context, 'CODES', Icons.qr_code, 
-                            _providers.map((provider) {
+                          // Logic: Only show Single Name providers
+                          _buildGroupTile(context, 'CODES', Icons.qr_code, [
+                            if (_singleNames.isEmpty)
+                               const Padding(
+                                 padding: EdgeInsets.all(16.0),
+                                 child: Text("No individual settings available."),
+                               ),
+
+                            ..._singleNames.map((provider) {
                               return SwitchListTile(
                                 title: Text(provider),
                                 dense: true,
@@ -250,13 +292,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 activeColor: primaryColor,
                                 onChanged: (val) => _toggleProvider(provider, val),
                               );
-                            }).toList(),
-                            initiallyExpanded: true, // Keep Codes open by default contextually? User said reduce buttons. False might be better, but Codes is main feature. Let's stick to user request for less clutter -> Default closed or open? I'll make it default false actually, or true only for codes. Let's leave false for all to be cleaner.
+                            }),
+                          ],
+                          initiallyExpanded: true,
                           ),
                         ],
                       ),
                     ),
                   ),
+                // (Support section follows in original file)
                 
                 const SizedBox(height: 24),
                 
@@ -279,7 +323,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           );
                         },
                       ),
-                      Divider(height: 1, indent: 16, endIndent: 16, color: isDark ? Colors.white10 : Colors.grey[100]),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // LEGAL & ABOUT SECTION
+                Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey[900] : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                       ListTile(
+                        leading: Icon(Icons.privacy_tip_outlined, color: primaryColor),
+                        title: const Text('Privacy Policy'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
+                          );
+                        },
+                      ),
+                      Divider(height: 1, indent: 16, endIndent: 16, color: isDark ? Colors.white10 : Colors.grey[200]),
+                      ListTile(
+                        leading: Icon(Icons.description_outlined, color: primaryColor),
+                        title: const Text('Terms of Service'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const TermsScreen()),
+                          );
+                        },
+                      ),
+                      Divider(height: 1, indent: 16, endIndent: 16, color: isDark ? Colors.white10 : Colors.grey[200]),
+                      ListTile(
+                        leading: Icon(Icons.code, color: primaryColor),
+                        title: const Text('Open Source Licenses'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                        onTap: () {
+                          showLicensePage(
+                            context: context,
+                            applicationName: AppConfig.shared.appName,
+                            applicationIcon: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(AppConfig.shared.logoImage, width: 48, height: 48),
+                            ),
+                          );
+                        },
+                      ),
+                       Divider(height: 1, indent: 16, endIndent: 16, color: isDark ? Colors.white10 : Colors.grey[200]),
                       ListTile(
                         leading: Icon(Icons.info_outline, color: primaryColor),
                         title: const Text('About App'),
@@ -296,10 +393,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 const SizedBox(height: 32),
-                const Center(
+                Center(
                   child: Text(
-                    'WinIt Version 2.2.1',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    '${AppConfig.shared.appName} Version 2.2.1',
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ),
               ],

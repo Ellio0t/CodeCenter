@@ -23,19 +23,6 @@ class CustomHeader extends StatelessWidget {
         Positioned.fill(
           child: Container(
             color: backgroundColor ?? AppConfig.shared.primaryColor,
-            child: ClipRect( // Clip to prevent overflow
-              child: Transform.scale(
-                scale: 1.5, // Zoom factor
-                child: Opacity(
-                  opacity: 0.3,
-                  child: Image.asset(
-                    'images/inboxdollars.png',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                  ),
-                ),
-              ),
-            ),
           ),
         ),
 
@@ -70,6 +57,7 @@ class CustomHeader extends StatelessWidget {
                 if (onRefresh != null)
                   IconButton(
                     icon: const Icon(Icons.refresh, color: Colors.white),
+                    iconSize: 30.0,
                     onPressed: onRefresh,
                   ),
                 if (actions != null) ...actions!,

@@ -2,7 +2,7 @@ param (
     [string]$Flavor = "all",
     [string]$Note = "",
     [string]$CommitMessage = "",
-    [switch]$BumpVersion,
+    [switch]$BumpVersion = $false,  # Changed default documentation logic: will be forced true in Auto
     [switch]$Auto,
     [switch]$DryRun
 )
@@ -30,7 +30,8 @@ function Set-PubspecVersion {
     foreach ($line in $content) {
         if ($line -match "^version:\s*.+") {
             $newContent += "version: $newVersion"
-        } else {
+        }
+        else {
             $newContent += $line
         }
     }
@@ -81,25 +82,28 @@ function Get-SmartScope {
         }
         
         # Specific paths
-        if ($file -match "android/app/src/winit" -or $file -match "assets/winit") { if ($scope -notcontains "winit") { $scope += "winit" } }
-        if ($file -match "android/app/src/perks" -or $file -match "assets/perks") { if ($scope -notcontains "perks") { $scope += "perks" } }
-        if ($file -match "android/app/src/swag" -or $file -match "assets/swag") { if ($scope -notcontains "swag") { $scope += "swag" } }
-        if ($file -match "android/app/src/codblox" -or $file -match "assets/codblox") { if ($scope -notcontains "codblox") { $scope += "codblox" } }
-        if ($file -match "android/app/src/crypto" -or $file -match "assets/crypto") { if ($scope -notcontains "crypto") { $scope += "crypto" } }
+        if ($file -match "android/app/src/winit" -or $file -match "assets/winit" -or $file -match "lib/main_winit.dart") { if ($scope -notcontains "winit") { $scope += "winit" } }
+        if ($file -match "android/app/src/perks" -or $file -match "assets/perks" -or $file -match "lib/main_perks.dart") { if ($scope -notcontains "perks") { $scope += "perks" } }
+        if ($file -match "android/app/src/swag" -or $file -match "assets/swag" -or $file -match "lib/main_swag.dart") { if ($scope -notcontains "swag") { $scope += "swag" } }
+        if ($file -match "android/app/src/codblox" -or $file -match "assets/codblox" -or $file -match "lib/main_codblox.dart") { if ($scope -notcontains "codblox") { $scope += "codblox" } }
+        if ($file -match "android/app/src/crypto" -or $file -match "assets/crypto" -or $file -match "lib/main_crypto.dart") { if ($scope -notcontains "crypto") { $scope += "crypto" } }
     }
 
     if ($isGlobal -or ($scope.Count -eq 0 -and $changedFiles.Count -gt 0)) {
         return "all"
-    } elseif ($scope.Count -gt 0) {
+    }
+    elseif ($scope.Count -gt 0) {
         return $scope
-    } else {
+    }
+    else {
         return "all" # Default to all if analysis fails but logic implies changes
     }
 }
 
 # --- Main Logic ---
 
-Write-Host "Build Manager v2.1 (Smart Git Integration)" -ForegroundColor Cyan
+$scriptStartTime = Get-Date
+Write-Host "Build Manager v2.2 (Build-First Note Generation)" -ForegroundColor Cyan
 
 # 0. Auto-Detection Logic
 if ($Auto) {
@@ -121,14 +125,27 @@ if ($Auto) {
 
     # Determine Note automatically if not provided
     if (-not $Note -and -not $CommitMessage) {
-        $Note = Get-LastCommitMessage
-        if (-not $Note) {
-            Write-Error "Could not auto-detect commit message. Please provide -Note or -CommitMessage."
-            exit 1
+        $gitStatus = git status --porcelain
+        if ($gitStatus) {
+            # Auto-Generate Note from Dirty Files
+            $files = @()
+            foreach ($line in $gitStatus) { if ($line.Length -gt 3) { $files += $line.Substring(3).Trim() } }
+            $fSummary = $files -join ", "
+            if ($fSummary.Length -gt 50) { $fSummary = $fSummary.Substring(0, 47) + "..." }
+            $Note = "Auto Update: $fSummary"
         }
+        else {
+            $Note = Get-LastCommitMessage
+        }
+
+        if (-not $Note) { $Note = "Automatic Build" } 
         Write-Host "Auto-Detected Note: $Note" -ForegroundColor Cyan
-    } elseif ($CommitMessage) {
+    }
+    elseif ($CommitMessage) {
         $Note = $CommitMessage
+        # Auto-Bump Version whenever we allow Auto build, to satisfy ensuring a "higher version" for every new AAB
+        $BumpVersion = $true
+        Write-Host "Auto-Bumping Version for new release..." -ForegroundColor Cyan
     }
 }
 
@@ -151,11 +168,13 @@ if ($BumpVersion) {
             Set-PubspecVersion $newVersionStr
             $currentVersionStr = $newVersionStr
         }
-    } else {
+    }
+    else {
         Write-Error "Could not parse version format in pubspec.yaml"
         exit 1
     }
-} else {
+}
+else {
     Write-Host "Current Version: $currentVersionStr" -ForegroundColor Gray
 }
 
@@ -164,7 +183,8 @@ if ($currentVersionStr -match "(\d+\.\d+\.\d+)\+(\d+)") {
     $vName = $matches[1]
     $vBuild = $matches[2]
     $headerVersion = "v$vName ($vBuild)"
-} else {
+}
+else {
     $headerVersion = "v$currentVersionStr"
 }
 
@@ -172,12 +192,14 @@ if ($currentVersionStr -match "(\d+\.\d+\.\d+)\+(\d+)") {
 $flavorsToProcess = @()
 if ($Flavor -contains "all") {
     $flavorsToProcess = $validFlavors
-} else {
+}
+else {
     # flavor can be an array/list
     foreach ($f in $Flavor) {
         if ($validFlavors -contains $f) {
             $flavorsToProcess += $f
-        } else {
+        }
+        else {
             Write-Warning "Skipping invalid flavor: $f"
         }
     }
@@ -192,46 +214,6 @@ if ($flavorsToProcess.Count -eq 0) {
 foreach ($f in $flavorsToProcess) {
     Write-Host "`nProcessing Flavor: $f" -ForegroundColor Green
     
-    # Try to find the file using wildcard
-    $noteFilePattern = "Notas Versi*n_$f.txt"
-    $files = Get-ChildItem -Path . -Filter $noteFilePattern
-    if ($files.Count -eq 0) {
-        Write-Warning "File pattern $noteFilePattern not found. Skipping notes update."
-        continue
-    }
-    $noteFile = $files[0].Name
-    Write-Host "  Found file: $noteFile" -ForegroundColor Gray
-
-    # Read existing notes
-    $notesContent = Get-Content $noteFile -Raw
-    $newNoteEntry = "- $Note"
-    
-    # Check if header exists
-    if ($notesContent.Trim().StartsWith($headerVersion)) {
-        Write-Host "  Header $headerVersion exists. Appending note." -ForegroundColor Gray
-        $firstLineEnd = $notesContent.IndexOf("`n")
-        if ($firstLineEnd -ge 0) {
-                # Ensure we handle \r\n vs \n
-                $rest = $notesContent.Substring($firstLineEnd)
-                if ($rest.StartsWith("`n") -or $rest.StartsWith("`r`n")) {
-                     # normalize
-                }
-                $updatedContent = $notesContent.Substring(0, $firstLineEnd) + "`n" + $newNoteEntry + $rest
-        } else {
-                $updatedContent = $headerVersion + "`n" + $newNoteEntry
-        }
-    } else {
-        Write-Host "  New version header $headerVersion required." -ForegroundColor Yellow
-        $updatedContent = "$headerVersion`n$newNoteEntry`n`n" + $notesContent
-    }
-
-    if (-not $DryRun) {
-        $updatedContent | Set-Content $noteFile -Encoding UTF8
-        Write-Host "  Updated $noteFile" -ForegroundColor White
-    } else {
-        Write-Host "  [DryRun] Would write to $noteFile" -ForegroundColor DarkGray
-    }
-
     # 4. Build
     $buildSpec = "flutter build appbundle --flavor $f"
     if (-not $DryRun) {
@@ -239,10 +221,67 @@ foreach ($f in $flavorsToProcess) {
         & flutter build appbundle --flavor $f
         if ($LASTEXITCODE -ne 0) {
             Write-Error "Build failed for $f"
-            # exit $LASTEXITCODE # Optional: Stop or continue
+            continue 
         }
-    } else {
+
+        # 5. Check AAB and Update Notes
+        # We look for the release AAB. 
+        # Path format: build/app/outputs/bundle/[flavor]Release/app-[flavor]-release.aab
+        $aabPath = "build\app\outputs\bundle\${f}Release\app-${f}-release.aab"
+        
+        if (Test-Path $aabPath) {
+            $aabItem = Get-Item $aabPath
+            # Check if file was written to AFTER script started = New Build
+            if ($aabItem.LastWriteTime -ge $scriptStartTime) {
+                Write-Host "  [SUCCESS] New AAB generated: $aabPath" -ForegroundColor Green
+                
+                # Only NOW do we touch the version notes
+                $noteFilePattern = "Notas Versi*n_$f.txt"
+                $files = Get-ChildItem -Path . -Filter $noteFilePattern
+                if ($files.Count -eq 0) {
+                    Write-Warning "  Note file for $f not found via pattern $noteFilePattern"
+                    continue
+                }
+                $noteFile = $files[0].Name
+                
+                # ... Previous Logic for Writing Note ...
+                # Read existing notes
+                $notesContent = Get-Content $noteFile -Raw
+                $newNoteEntry = "- $Note"
+                
+                # Check if header exists
+                if ($notesContent.Trim().StartsWith($headerVersion)) {
+                    Write-Host "  Header $headerVersion exists in $noteFile. Appending note." -ForegroundColor Gray
+                    $firstLineEnd = $notesContent.IndexOf("`n")
+                    if ($firstLineEnd -ge 0) {
+                        $rest = $notesContent.Substring($firstLineEnd)
+                        $updatedContent = $notesContent.Substring(0, $firstLineEnd) + "`n" + $newNoteEntry + $rest
+                    }
+                    else {
+                        $updatedContent = $headerVersion + "`n" + $newNoteEntry
+                    }
+                }
+                else {
+                    Write-Host "  Creating new version block $headerVersion in $noteFile." -ForegroundColor Yellow
+                    $updatedContent = "$headerVersion`n$newNoteEntry`n`n" + $notesContent
+                }
+
+                $updatedContent | Set-Content $noteFile -Encoding UTF8
+                Write-Host "  [NOTE UPDATED] Added changes to $noteFile" -ForegroundColor White
+
+            }
+            else {
+                Write-Warning "  Build command finished, but AAB timestamp is old. Build might have been skipped or failed silently? Skipping note update."
+            }
+        }
+        else {
+            Write-Error "  AAB file missing at $aabPath. Build failed to produce output."
+        }
+
+    }
+    else {
         Write-Host "  [DryRun] Would execute: $buildSpec" -ForegroundColor DarkGray
+        Write-Host "  [DryRun] Would check for AAB update and write to note file." -ForegroundColor DarkGray
     }
 }
 

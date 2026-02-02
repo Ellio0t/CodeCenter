@@ -17,6 +17,9 @@ class AppConfig {
   final String rssUrl;
   final String drawerImage;
   final String logoImage;
+  final String primeImage; // Added for customized Prime Logo
+  final String elliotLogoImage; // Added for customized Elliot Logo
+  final Color designerColor; // Added for customized Designed By Text
   
   // Singleton instance
   static AppConfig? _instance;
@@ -31,6 +34,9 @@ class AppConfig {
     required this.rssUrl,
     required this.drawerImage,
     required this.logoImage,
+    required this.primeImage,
+    required this.elliotLogoImage,
+    required this.designerColor,
   });
 
   // Global access to the current config
@@ -51,6 +57,9 @@ class AppConfig {
     required String rssUrl,
     required String drawerImage,
     required String logoImage,
+    required String primeImage,
+    required String elliotLogoImage,
+    required Color designerColor,
   }) {
     _instance = AppConfig._internal(
       flavor: flavor,
@@ -61,6 +70,9 @@ class AppConfig {
       rssUrl: rssUrl,
       drawerImage: drawerImage,
       logoImage: logoImage,
+      primeImage: primeImage,
+      elliotLogoImage: elliotLogoImage,
+      designerColor: designerColor,
     );
   }
 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/prime_provider.dart';
 import '../screens/prime_offer_screen.dart';
@@ -35,11 +35,11 @@ class PrimeBanner extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 80, right: 16, top: 4, bottom: 4), 
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [
-                      Color(0xFF10D34E), // WinIt Green
-                      Color(0xFFFFD700), // Gold
-                      Color(0xFFFFA500), // Orange
+                      AppConfig.shared.primaryColor, // WinIt Green
+                      const Color(0xFFFFD700), // Gold
+                      const Color(0xFFFFA500), // Orange
                     ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -47,7 +47,7 @@ class PrimeBanner extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10D34E).withOpacity(0.4),
+                      color: AppConfig.shared.primaryColor.withOpacity(0.4),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
                     ),
@@ -126,7 +126,7 @@ class PrimeBanner extends StatelessWidget {
                       ),
                     ),
                     Image.asset(
-                      AppConfig.shared.drawerImage, // Dynamic Flavor Image
+                      AppConfig.shared.primeImage, // Use dynamic Prime Logo
                       height: 100,
                       width: 100,
                       fit: BoxFit.contain,
@@ -140,3 +140,5 @@ class PrimeBanner extends StatelessWidget {
       );
     }
   }
+
+

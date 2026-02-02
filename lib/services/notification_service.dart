@@ -1,17 +1,29 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
+﻿import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../config/app_config.dart';
 
 // This must be a top-level function
+@pragma('vm:entry-point')
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
     print("Handling a background message: ${message.messageId}");
   }
-  // Initialize Local Notifications for the background isolate
+
+  // OPTIMIZATION: Check this FIRST.
+  // If the message brings a notification payload, Android displays it automatically.
+  // We exit immediately to save resources/battery and prevent duplicates.
+  if (message.notification != null) {
+      // print("System handling notification. Exiting background handler."); 
+      return; 
+  }
+
+  // Initialize Local Notifications only if we absolutely need to post a manual notification (Data-only message)
   final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
   const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('small_icon');
   const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
@@ -50,9 +62,54 @@ class NotificationService {
       print('User granted permission: ${settings.authorizationStatus}');
     }
 
-    // Subscribe to topic (Not supported on Web yet)
+    // I will replace the block inside initialize() 
+    
+    // Subscribe to topics (Not supported on Web yet)
+    // Subscribe to topics (Not supported on Web yet)
     if (!kIsWeb) {
-      await _firebaseMessaging.subscribeToTopic('new_codes');
+      // 1. Global Channel for all flavors
+      await _firebaseMessaging.subscribeToTopic('center');
+      if (kDebugMode) print("Subscribed to global topic: center");
+
+      // 2. Flavor specific channel (Legacy 'new_codes' for Winit compatibility)
+      try {
+        final flavor = AppConfig.shared.flavor;
+        String flavorTopic;
+
+        if (flavor == AppFlavor.winit) {
+          flavorTopic = 'new_codes';
+        } else {
+          flavorTopic = 'new_codes_${flavor.name}';
+        }
+
+        await _firebaseMessaging.subscribeToTopic(flavorTopic);
+        if (kDebugMode) print("Subscribed to flavor topic: $flavorTopic");
+
+      } catch (e) {
+        print("Error getting AppConfig flavor: $e");
+        // Fallback or ignore
+      }
+
+      // 3. Restore User Preferences Subscriptions (Money Back, Games)
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final bool masterEnabled = prefs.getBool('notifications_enabled') ?? true;
+
+        if (masterEnabled) {
+          // Money Back
+          if (prefs.getBool('sub_money_back') ?? true) {
+            await _firebaseMessaging.subscribeToTopic('money_back');
+            if (kDebugMode) print("Restored subscription: money_back");
+          }
+          // Game Center
+          if (prefs.getBool('sub_game_center') ?? true) {
+            await _firebaseMessaging.subscribeToTopic('game_center');
+            if (kDebugMode) print("Restored subscription: game_center");
+          }
+        }
+      } catch (e) {
+        print("Error restoring subscriptions: $e");
+      }
     }
 
     // 2. Setup Background Handler
@@ -138,26 +195,24 @@ class NotificationService {
         
         switch (type) {
           case 'code':
-            finalTitle = "🎟️ $finalTitle";
+            finalTitle = finalTitle;
             break;
           case 'money_back':
           case 'cashback':
-            finalTitle = "💰 $finalTitle";
+            finalTitle = finalTitle;
             break;
           case 'game_center':
           case 'games':
-            finalTitle = "🎮 $finalTitle";
+            finalTitle = finalTitle;
             break;
           case 'news':
-            finalTitle = "📰 $finalTitle";
+            finalTitle = finalTitle;
             break;
           default:
-            // No emoji for unknown types, or default
-            finalTitle = "🔔 $finalTitle";
+            finalTitle = finalTitle;
         }
       } else {
-         // Default fallback if no type provided
-         finalTitle = "💎 $finalTitle"; 
+         finalTitle = finalTitle; 
       }
 
       // Big Picture Logic: URL or Default Local Asset (big500x300.png)
@@ -212,7 +267,7 @@ class NotificationService {
             'High Importance Notifications',
             channelDescription: 'This channel is used for important notifications and new codes.',
             icon: 'small_icon',
-            color: const Color(0xFF10D34E),
+            color: const Color(0xFFFE3406),
             largeIcon: largeIcon != null ? ByteArrayAndroidBitmap(largeIcon) : null, 
             importance: Importance.max,
             priority: Priority.high,
@@ -250,3 +305,4 @@ class NotificationService {
     }
   }
 }
+

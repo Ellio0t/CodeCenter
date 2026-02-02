@@ -8,9 +8,9 @@ import '../services/firestore_service.dart';
 import '../models/cashback_code.dart';
 import '../screens/notification_center_screen.dart';
 
-List<Widget> buildHeaderActions(BuildContext context) {
+List<Widget> buildHeaderActions(BuildContext context, {Color? colorOverride}) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
-  final iconColor = isDark ? Colors.white70 : Colors.white;
+  final iconColor = colorOverride ?? (isDark ? Colors.white70 : Colors.black87);
 
   return [
     // 1. Search (Magnifying Glass)
@@ -44,7 +44,7 @@ List<Widget> buildHeaderActions(BuildContext context) {
              if (expiration.hour == 0 && expiration.minute == 0 && expiration.second == 0) {
                 expiration = DateTime(expiration.year, expiration.month, expiration.day, 23, 59, 59);
              }
-             return expiration.isAfter(now);
+             return expiration.isAfter(now) && !code.siteName.trim().contains(' ');
           }).length;
         }
 

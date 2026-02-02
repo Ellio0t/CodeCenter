@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import '../config/app_config.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
@@ -44,7 +45,7 @@ class FloatingNavBar extends StatelessWidget {
 
   Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
     final isSelected = currentIndex == index;
-    final primaryColor = const Color(0xFF10D34E); // Brand Green
+    final primaryColor = AppConfig.shared.primaryColor; // Brand Color
 
     return GestureDetector(
       onTap: () => onTap(index),
@@ -71,3 +72,4 @@ class FloatingNavBar extends StatelessWidget {
     );
   }
 }
+

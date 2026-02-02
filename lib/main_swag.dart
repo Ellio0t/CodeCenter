@@ -12,6 +12,9 @@ void main() async {
     rssUrl: "http://feeds.feedburner.com/SwagbucksFeed",
     drawerImage: "images/swag_drawer.png",
     logoImage: "images/swag-app.png",
+    primeImage: "images/swag-app.png",
+    elliotLogoImage: "images/elliot_swag.png",
+    designerColor: const Color(0xFFE040FB), // Purple Accent
   );
 
   await mainCommon();

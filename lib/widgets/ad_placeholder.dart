@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../providers/prime_provider.dart';
 
 import '../services/ad_helper.dart';
+import '../config/app_config.dart';
 
 class AdPlaceholder extends StatefulWidget {
   const AdPlaceholder({super.key});
@@ -54,7 +55,7 @@ class _AdPlaceholderState extends State<AdPlaceholder> {
         cornerRadius: 10.0,
         callToActionTextStyle: NativeTemplateTextStyle(
           textColor: Colors.white,
-          backgroundColor: const Color(0xFF10D34E),
+          backgroundColor: AppConfig.shared.primaryColor,
           style: NativeTemplateFontStyle.bold,
           size: 16.0,
         ),
@@ -116,3 +117,4 @@ class _AdPlaceholderState extends State<AdPlaceholder> {
     return const SizedBox.shrink();
   }
 }
+

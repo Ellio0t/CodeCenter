@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../models/cashback_code.dart';
 import '../services/firestore_service.dart';
 import '../widgets/code_card.dart';
+import '../config/app_config.dart';
 
 class CodeSearchDelegate extends SearchDelegate {
   final FirestoreService _firestoreService = FirestoreService();
@@ -14,7 +15,7 @@ class CodeSearchDelegate extends SearchDelegate {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Theme.of(context).copyWith(
       appBarTheme: AppBarTheme(
-        backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : const Color(0xFF10D34E),
+        backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : AppConfig.shared.primaryColor,
         foregroundColor: isDark ? Colors.white70 : Colors.white,
         elevation: 0,
       ),
@@ -29,8 +30,8 @@ class CodeSearchDelegate extends SearchDelegate {
         ),
       ),
       textSelectionTheme: TextSelectionThemeData(
-        cursorColor: isDark ? const Color(0xFF10D34E) : Colors.white,
-        selectionColor: isDark ? const Color(0xFF10D34E).withOpacity(0.3) : Colors.white24,
+        cursorColor: isDark ? AppConfig.shared.primaryColor : Colors.white,
+        selectionColor: isDark ? AppConfig.shared.primaryColor.withOpacity(0.3) : Colors.white24,
       ),
     );
   }
@@ -118,3 +119,4 @@ class CodeSearchDelegate extends SearchDelegate {
     );
   }
 }
+

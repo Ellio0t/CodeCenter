@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../models/referral_site.dart';
 import '../screens/rss_feed_screen.dart';
+import '../config/app_config.dart';
 
 class ReferralSection extends StatelessWidget {
   final List<ReferralSite> referralSites;
@@ -33,15 +34,15 @@ class ReferralSection extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                         fontSize: 20, // Match RECENT CODES size
 
-                        color: const Color(0xFF10D34E),
+                        color: AppConfig.shared.primaryColor,
                         letterSpacing: 1.2,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 16,
-                      color: Color(0xFF10D34E),
+                      color: AppConfig.shared.primaryColor,
                     ),
                   ],
                 ),
@@ -75,16 +76,16 @@ class ReferralSection extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Theme.of(context).brightness == Brightness.dark 
-                              ? const Color(0xFF1B5E20) // Dark Green border
-                              : const Color(0xFF10D34E).withOpacity(0.3), 
+                              ? AppConfig.shared.primaryColor // Dynamic Dark Border
+                              : AppConfig.shared.primaryColor.withOpacity(0.3), 
                             width: 1
                           ),
                         ),
                         child: CircleAvatar(
                           radius: 30,
                           backgroundColor: Theme.of(context).brightness == Brightness.dark 
-                              ? const Color(0xFF0D3311) // Very Dark Green background
-                              : const Color(0xFFD4EDDA),
+                              ? AppConfig.shared.primaryColor.withOpacity(0.15) // Dynamic Dark Background
+                              : AppConfig.shared.primaryColor.withOpacity(0.08), // Dynamic Light Background
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: site.logoAssetsPath != null
@@ -115,3 +116,6 @@ class ReferralSection extends StatelessWidget {
     );
   }
 }
+
+
+

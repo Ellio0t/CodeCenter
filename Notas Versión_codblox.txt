@@ -1,3 +1,8 @@
+﻿v2.2.17 (2697)
+- Auto Update: "Notas Versi\303\263n_codblox.txt", "Notas Vers...
+- Auto Update: "Notas Versi\303\263n_codblox.txt", "Notas Vers...
+- Auto Update: "Notas Versi\303\263n_winit.txt", android/app/s...
+
 v2.2.15 (2695)
 - Fixed "Money Back" Section: Title corrected to "CASHBACK" and filter optimized (Strict "Money" tag).
 - Reverted "Games" header color to Brand Green.
@@ -55,3 +60,6 @@ v2.2.5 (2680)
 v2.2.4 (2679)
 - Android 15 Edge-to-Edge support.
 - Fixed deprecated UI APIs.
+
+
+

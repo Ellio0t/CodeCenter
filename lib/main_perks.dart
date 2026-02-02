@@ -12,6 +12,9 @@ void main() async {
     rssUrl: "https://feeds.feedburner.com/pointperk",
     drawerImage: "images/perk_drawer.png",
     logoImage: "images/perk-app.png",
+    primeImage: "images/per_prime.png",
+    elliotLogoImage: "images/elliot_perk.png",
+    designerColor: const Color(0xFF18FFFF), // Cyan Accent
   );
 
   await mainCommon();

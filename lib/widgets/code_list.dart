@@ -59,6 +59,31 @@ class CodeList extends StatelessWidget {
           return useSliver ? SliverToBoxAdapter(child: emptyWidget) : emptyWidget;
         }
 
+        // Filter: Only allow single-word site names (as per app requirements),
+        // BUT allow specific exceptions like "My Points" or "Perk Code" as requested.
+        codes = codes.where((c) {
+           final name = c.siteName.trim();
+           if (name.contains(' ')) {
+             // Exceptions for multi-word site names that are valid
+             final lower = name.toLowerCase();
+             if (lower.contains('points') || lower.contains('perk')) {
+               return true;
+             }
+             return false;
+           }
+           return true;
+        }).toList();
+        
+        if (codes.isEmpty) {
+           final emptyWidget = const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: Text('No matching codes available.'),
+            ),
+          );
+          return useSliver ? SliverToBoxAdapter(child: emptyWidget) : emptyWidget;
+        }
+
         // Apply Limit if provided
         if (limit != null) {
           codes = codes.take(limit!).toList();

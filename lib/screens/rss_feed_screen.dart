@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:html/parser.dart' show parse;
@@ -200,7 +200,7 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
     // Determine Color based on Category
     Color? headerColor;
     if (widget.filterCategory == 'Money Back') {
-      headerColor = const Color(0xFF10D34E); // Green for Money Back
+      headerColor = AppConfig.shared.primaryColor; // Green/Brand for Money Back
     }
     // Reverted Games color to default (Green/Theme) by not setting it here for Games
 
@@ -214,18 +214,17 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
                 : (widget.filterCategory == 'Games' ? 'GAMES' : 'NEWS'),
             backgroundColor: headerColor,
             onRefresh: _fetchFeed,
-            actions: buildHeaderActions(context),
           ),
           
           Expanded(
             child: _isLoading
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(color: Color(0xFF10D34E)),
-                        SizedBox(height: 16),
-                        Text('LOADING LATEST NEWS...', style: TextStyle(color: Colors.grey)),
+                        CircularProgressIndicator(color: AppConfig.shared.primaryColor),
+                        const SizedBox(height: 16),
+                        const Text('LOADING LATEST NEWS...', style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                   )
@@ -241,7 +240,7 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
                             ElevatedButton(
                               onPressed: _fetchFeed,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF10D34E),
+                                backgroundColor: AppConfig.shared.primaryColor,
                                 foregroundColor: Colors.white,
                               ),
                               child: const Text('RETRY'),
@@ -315,12 +314,12 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
                             height: 170, 
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              gradient: const LinearGradient(
+                              gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
-                                  Color(0xFF10D34E),
-                                  Color(0xFF0A8A33),
+                                  AppConfig.shared.primaryColor,
+                                  AppConfig.shared.primaryColor.withOpacity(0.8),
                                 ],
                               ),
                               boxShadow: [
@@ -350,8 +349,8 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
                                     duration: const Duration(milliseconds: 300),
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                     decoration: BoxDecoration(
-                                      gradient: isNew ? const LinearGradient(
-                                        colors: [Color(0xFF10D34E), Color(0xFF00FF88)],
+                                      gradient: isNew ? LinearGradient(
+                                        colors: [AppConfig.shared.primaryColor, AppConfig.shared.primaryColor.withOpacity(0.6)],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ) : null,
@@ -364,7 +363,7 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
                                       ),
                                       boxShadow: isNew ? [
                                         BoxShadow(
-                                          color: const Color(0xFF10D34E).withOpacity(0.6),
+                                          color: AppConfig.shared.primaryColor.withOpacity(0.6),
                                           blurRadius: 10,
                                           spreadRadius: 1,
                                         )
@@ -423,3 +422,5 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
 }
 
 // BannerAdWidget refactored to separate file
+
+

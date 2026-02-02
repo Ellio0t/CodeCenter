@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../models/cashback_code.dart';
+import '../config/app_config.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -12,7 +13,7 @@ class FirestoreService {
     // y ordenamos en memoria para corregir posibles inconsistencias de formato de fecha en la BD.
     return _db.collection('codes')
         .orderBy('date', descending: true)
-        .limit(50) 
+        .limit(500) 
         .snapshots()
         .map((snapshot) {
       print('FirestoreService: Received snapshot with ${snapshot.docs.length} documents.');
@@ -45,12 +46,54 @@ class FirestoreService {
           final siteName = data['siteName'] ?? 'No Name';
           final code = data['code'] ?? 'No Code';
           final description = data['description'] ?? 'No Description';
+          // Extract flavor, default to 'winit' if missing (Legacy compatibility)
+          var codeFlavor = (data['flavor'] as String?)?.toLowerCase() ?? 'winit';
+          if (codeFlavor == 'perk') codeFlavor = 'perks';
           
-          // Filtering logic: Skip invalid or placeholder entries
+          // Filtering logic: 
+          // 1. Skip invalid or placeholder entries
+          // 2. Filter by Flavor (Client-side filtering is simpler than maintaining 5+ compound indexes)
+          
           if (siteName == 'No Name' || siteName.isEmpty ||
               code == 'No Code' || code.isEmpty ||
               description == 'No Description') {
             continue;
+          }
+
+          // Flavor Check:
+          final currentFlavor = AppConfig.shared.flavor.name; // e.g., 'winit', 'perks'
+          
+          // Rules:
+          // - If I am Winit: Show 'winit' AND codes with no flavor (legacy) -> Handled by default 'winit' above
+          // - If I am Perks: Show ONLY 'perks'
+          
+          // Auto-Correction for Legacy Data:
+          // If flavor is missing (defaulted to 'winit') BUT siteName clearly indicates another app, fix it dynamically.
+          String finalFlavor = codeFlavor;
+          
+          if (finalFlavor == 'winit') { // Only check if it claims to be winit (or default)
+            final String lowerSite = siteName.toLowerCase();
+            if (lowerSite.contains('swagbucks') || lowerSite.contains('sb')) {
+              finalFlavor = 'swag';
+            } else if (lowerSite.contains('mypoints') || lowerSite.contains('point') || lowerSite.contains('perk')) {
+              finalFlavor = 'perks';
+            } else if (lowerSite.contains('roblox')) {
+              finalFlavor = 'codblox';
+            } else if (lowerSite.contains('crypto') || lowerSite.contains('airdrop')) {
+              finalFlavor = 'crypto';
+            }
+          }
+
+          if (finalFlavor != currentFlavor) {
+             // Debug print only if we are in Perks app to see what's being skipped
+             if (currentFlavor == 'perks') {
+                 print('Skipping code "$code" ($siteName) - Resolved Flavor: $finalFlavor vs Current: $currentFlavor');
+             }
+             continue; 
+          } else {
+             if (currentFlavor == 'perks') {
+                 print('Including code "$code" ($siteName) for Perks app.');
+             }
           }
           
           allParsedCodes.add(CashbackCode(
@@ -104,9 +147,19 @@ class FirestoreService {
       for (var doc in snapshot.docs) {
         final data = doc.data();
         final siteName = data['siteName'] as String?;
-        if (siteName != null && siteName.isNotEmpty && siteName != 'No Name' && siteName != 'Unknown') {
-          providers.add(siteName);
-        }
+          // 1. Validar nombre base
+          if (siteName != null && siteName.isNotEmpty && siteName != 'No Name' && siteName != 'Unknown') {
+            
+            // 2. EXCLUSIÓN EXPLÍCITA (Solicitado por usuario)
+            if (siteName == 'Five Nights TD 2' || siteName == 'Swagbucks') continue;
+
+            // 3. FILTRO ESTRICTO: Solo nombres de UNA PALABRA (sin espacios)
+            // Esto elimina automáticamente "Five Nights TD 2", "Bingo Blitz", etc. 
+            // Solo permitirá "Bingo", "Swagbucks", "MyPoints", etc.
+            if (!siteName.trim().contains(' ')) {
+               providers.add(siteName);
+            }
+          }
       }
       
       // Removed fallback logic to strict filtering: Only return providers found in DB

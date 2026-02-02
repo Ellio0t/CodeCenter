@@ -12,6 +12,9 @@ void main() async {
     rssUrl: "https://www.airdropcrypto.net/rss.xml",
     drawerImage: "images/crypto_drawer.png",
     logoImage: "images/aidrop_app.png",
+    primeImage: "images/aidrop_app.png",
+    elliotLogoImage: "images/elliot_crypto.png",
+    designerColor: const Color(0xFFFFD740), // Amber Accent
   );
 
   await mainCommon();

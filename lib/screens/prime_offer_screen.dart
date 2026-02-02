@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../providers/prime_provider.dart';
-import '../widgets/custom_header.dart';
 import '../widgets/header_actions.dart';
-import '../config/app_config.dart'; // Added
+import '../config/app_config.dart';
 
 class PrimeOfferScreen extends StatelessWidget {
   const PrimeOfferScreen({super.key});
@@ -14,158 +13,194 @@ class PrimeOfferScreen extends StatelessWidget {
     final primeProvider = Provider.of<PrimeProvider>(context);
     final isPrime = primeProvider.isPrime;
     final products = primeProvider.products;
+    final config = AppConfig.shared;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Use app primary color or Golden for Prime branding? 
+    // Usually Prime implies Gold/Premium, but maintaining app consistency is key.
+    // Let's use a dynamic gradient based on app color but "richer".
+    
     return Scaffold(
-      body: Column(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text(''), // Clean Look
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const BackButton(color: Colors.white),
+        actions: buildHeaderActions(context, colorOverride: Colors.white),
+      ),
+      body: Stack(
         children: [
-          CustomHeader(
-            title: 'WINIT PRIME',
-            actions: buildHeaderActions(context),
-          ),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24.0),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: Theme.of(context).brightness == Brightness.dark 
-                    ? [Theme.of(context).scaffoldBackgroundColor, const Color(0xFF121212)] 
-                    : [Colors.white, const Color(0xFFF0FDF4)],
-                ),
+          // 1. Premium Background Gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDark 
+                 ? [const Color(0xFF121212), Color.lerp(Colors.black, config.primaryColor, 0.2)!] // Carbon Black + Glow
+                 : [
+                     Color.lerp(config.primaryColor, Colors.black, 0.4)!,  
+                     Color.lerp(config.primaryColor, Colors.black, 0.8)!
+                   ], // Much darker/richer for premium feel & less eye strain
               ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 20),
+            ),
+          ),
+          
+          // 2. Main Content
+          SafeArea(
+            child: SizedBox(
+               width: double.infinity,
+               child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center, // Center vertically if space allows
                   children: [
-                    if (primeProvider.statusMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Text(
-                          primeProvider.statusMessage!,
-                          style: const TextStyle(color: Colors.red, fontSize: 14),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    // Golden Glow Logo
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          height: 80,
-                          width: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFFFFD700).withOpacity(0.6), // Gold Glow
-                                blurRadius: 40,
-                                spreadRadius: 10,
-                              ),
-                            ],
+                    const SizedBox(height: 10), // Reduced from 20
+                    
+                    // Crown / Prime Badge (Simplified & Compact)
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFFD700).withOpacity(config.flavor == AppFlavor.perks ? 0.3 : 0.6), // Dimmer for Perks
+                            blurRadius: config.flavor == AppFlavor.perks ? 25 : 50, // Less blur for Perks
+                            spreadRadius: 1, 
+                            offset: const Offset(0, 0),
                           ),
-                        ),
-                        Image.asset(
-                          AppConfig.shared.drawerImage, // Dynamic Flavor Image
-                          height: 120,
-                          fit: BoxFit.contain,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      isPrime ? 'You are a Prime Member!' : 'Upgrade to Prime',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF424242),
+                        ],
+                      ),
+                      child: Image.asset(
+                        config.primeImage,
+                        height: 120, // Increased from 90
+                        width: 120, 
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    
+                    const SizedBox(height: 20), // Reduced from 32
+                    
+                    // Title
+                    Text(
+                      isPrime ? 'PRIME MEMBER' : 'UPGRADE TO PRIME',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 22, // Reduced from 26
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 1.2,
+                        shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0,4))],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 8), // Reduced from 12
+                    
+                    // Subtitle
                     Text(
                       isPrime 
-                          ? 'Thank you for supporting WinIt. Enjoy your ad-free experience.' 
-                          : 'Enjoy a distraction-free experience and support the development of WinIt.',
+                        ? 'Thank you for your support!' 
+                        : 'Remove ads and unlock the full potential of ${config.appName}.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[400] : Colors.grey,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 13, // Reduced from 15
+                        color: Colors.white.withOpacity(0.9),
+                        height: 1.3,
                       ),
                     ),
-                    const SizedBox(height: 40),
-                    if (!isPrime) ...[
-                      Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildFeatureRow(context, 'No More Ads', FontAwesomeIcons.ban),
-                            const SizedBox(height: 16),
-                            _buildFeatureRow(context, 'Prioritized Code Updates', FontAwesomeIcons.bolt),
-                            const SizedBox(height: 16),
-                            _buildFeatureRow(context, 'Get Early Access to New Reward Sites', FontAwesomeIcons.bell),
-                            const SizedBox(height: 16),
-                            _buildFeatureRow(context, 'Exclusive Premium Support', FontAwesomeIcons.headset),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 48),
 
-                      if (!primeProvider.isAvailable)
-                        const Text('Store unavailable', style: TextStyle(color: Colors.red))
-                      else if (products.isEmpty)
-                         if (primeProvider.statusMessage != null)
-                           const SizedBox.shrink()
-                         else
-                           const CircularProgressIndicator(color: Color(0xFF10D34E))
+                    const SizedBox(height: 24), // Reduced from 48
+
+                    // Feature List (Compact Glass Card)
+                    if (!isPrime) 
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Reduced padding
+                      decoration: BoxDecoration(
+                         color: Colors.black.withOpacity(0.2), // Dark transparent card
+                         borderRadius: BorderRadius.circular(20),
+                         border: Border.all(color: Colors.white10),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildFeatureItem(Icons.block, 'Ad-Free Experience', 'Browse without interruptions'),
+                          const Divider(color: Colors.white12, height: 20), // Reduced height
+                          _buildFeatureItem(Icons.bolt, 'Priority Updates', 'Get new codes faster'),
+                          const Divider(color: Colors.white12, height: 20), // Reduced height
+                          _buildFeatureItem(Icons.verified_user_outlined, 'Premium Support', 'Direct access to developer'),
+                        ],
+                      ),
+                    ) else 
+                    // Success View
+                    Container(
+                       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
+                       decoration: BoxDecoration(
+                         color: Colors.white.withOpacity(0.1),
+                         borderRadius: BorderRadius.circular(24),
+                         border: Border.all(color: Colors.greenAccent),
+                       ),
+                       child: Column(
+                         children: const [
+                           Icon(Icons.check_circle_outline, color: Colors.greenAccent, size: 50),
+                           SizedBox(height: 12),
+                           Text(
+                             "You are all set!",
+                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                           ),
+                         ],
+                       ),
+                    ),
+
+                    const SizedBox(height: 24), // Reduced from 48
+
+                    // Action Button
+                    if (!isPrime) 
+                      if (products.isEmpty)
+                         primeProvider.statusMessage != null 
+                             ? Text(primeProvider.statusMessage!, style: const TextStyle(color: Colors.white)) 
+                             : const CircularProgressIndicator(color: Colors.white)
                       else
-                        ElevatedButton(
-                          onPressed: () {
-                            primeProvider.buyPrime();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF10D34E),
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => primeProvider.buyPrime(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: config.primaryColor,
+                              padding: const EdgeInsets.symmetric(vertical: 14), // Reduced padding
+                              elevation: 8,
+                              shadowColor: Colors.black45,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
                             ),
-                            elevation: 5,
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
                             child: Text(
-                              'Get Prime for ${products.first.price}',
+                              'UPGRADE FOR ${products.first.price}',
                               style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.0,
                               ),
                             ),
                           ),
                         ),
-                        
-                       const SizedBox(height: 16),
-                       TextButton(
-                         onPressed: () {
-                           primeProvider.restorePurchases();
-                         },
-                         child: const Text('Restore Purchases', style: TextStyle(color: Color(0xFF10D34E))),
-                       ),
 
-                    ] else ...[
-                       const Icon(Icons.check_circle, color: Color(0xFF10D34E), size: 64),
-                       const SizedBox(height: 24),
+                    if (!isPrime) ...[
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () => primeProvider.restorePurchases(),
+                        child: Text(
+                          'Restore Purchase',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.7),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ],
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Close', style: TextStyle(color: Colors.grey)),
-                    ),
                   ],
                 ),
+
               ),
             ),
           ),
@@ -174,23 +209,41 @@ class PrimeOfferScreen extends StatelessWidget {
     );
   }
 
-
-  Widget _buildFeatureRow(BuildContext context, String text, IconData icon) {
+  Widget _buildFeatureItem(IconData icon, String title, String subtitle) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Icon(icon, color: const Color(0xFF10D34E), size: 20),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 16, 
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black87,
-            ),
-          ),
-        ),
+         Container(
+           padding: const EdgeInsets.all(10),
+           decoration: BoxDecoration(
+             color: Colors.white.withOpacity(0.1),
+             shape: BoxShape.circle,
+           ),
+           child: Icon(icon, color: Colors.white, size: 24),
+         ),
+         const SizedBox(width: 16),
+         Expanded(
+           child: Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               Text(
+                 title,
+                 style: const TextStyle(
+                   color: Colors.white,
+                   fontWeight: FontWeight.bold,
+                   fontSize: 16,
+                 ),
+               ),
+               const SizedBox(height: 4),
+               Text(
+                 subtitle,
+                 style: TextStyle(
+                   color: Colors.white.withOpacity(0.7),
+                   fontSize: 13,
+                 ),
+               ),
+             ],
+           ),
+         )
       ],
     );
   }
