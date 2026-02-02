@@ -63,15 +63,15 @@ class CodeList extends StatelessWidget {
         // BUT allow specific exceptions like "My Points" or "Perk Code" as requested.
         codes = codes.where((c) {
            final name = c.siteName.trim();
-           if (name.contains(' ')) {
-             // Exceptions for multi-word site names that are valid
-             final lower = name.toLowerCase();
-             if (lower.contains('points') || lower.contains('perk')) {
-               return true;
-             }
-             return false;
+           // Allow single words OR specifically allow 'My' (for MyPoints) or 'Perk' variants
+           if (!name.contains(' ')) return true;
+           
+           final lower = name.toLowerCase();
+           if (lower.contains('mypoints') || lower.contains('my points') || lower.contains('perk')) {
+             return true;
            }
-           return true;
+           
+           return false; 
         }).toList();
         
         if (codes.isEmpty) {
