@@ -20,15 +20,31 @@ class FirestoreService {
       final app = Firebase.app('CodeCenterMaster');
       return FirebaseFirestore.instanceFor(app: app);
     } catch (e) {
-      // Not initialized, initialize it now using the options from firebase_options.dart
-      // We use 'android' options as a baseline (or detecting platform)
-      // Since we are in mobile app context, DefaultFirebaseOptions.currentPlatform is best.
-      
+      // Not initialized, initialize it now
+      // We use 'android' options as a baseline
+      FirebaseOptions options = DefaultFirebaseOptions.currentPlatform;
+
+      // CRITICAL: Override AppID for specific flavors to match what is registered in 'winitcode' project.
+      // This ensures the Package Name + App ID pair is valid for API Key restrictions.
+      if (defaultTargetPlatform == TargetPlatform.android) {
+         final flavor = AppConfig.shared.flavor;
+         if (flavor == AppFlavor.perks) {
+            // "Perks" App ID registered in 'winitcode' project
+            options = FirebaseOptions(
+              apiKey: options.apiKey,
+              appId: '1:66500442999:android:8d7e6d4fd33c5be28c3f72', 
+              messagingSenderId: options.messagingSenderId,
+              projectId: options.projectId,
+              databaseURL: options.databaseURL,
+              storageBucket: options.storageBucket,
+            );
+         }
+         // Future: Add Swag, Codblox, etc. here once registered
+      }
+
       final masterApp = await Firebase.initializeApp(
         name: 'CodeCenterMaster',
-        options: DefaultFirebaseOptions.currentPlatform, 
-        // Note: DefaultFirebaseOptions in this repo is configured for 'winitcode' 
-        // because it was generated from that project. Perfect!
+        options: options, 
       );
       return FirebaseFirestore.instanceFor(app: masterApp);
     }
