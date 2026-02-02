@@ -3,19 +3,53 @@ import 'package:intl/intl.dart';
 import '../models/cashback_code.dart';
 import '../config/app_config.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart'; // Import generated options
+
 class FirestoreService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  // Use a future to ensure initialization
+  Future<FirebaseFirestore> _getDb() async {
+    // 1. Check if current default app is 'winitcode' (The Master DB)
+    if (Firebase.app().options.projectId == 'winitcode') {
+      return FirebaseFirestore.instance;
+    }
+
+    // 2. If we are in a flavor (e.g. Perks/point-perks), we need to connect to WinitCode
+    try {
+      // Check if already initialized
+      final app = Firebase.app('CodeCenterMaster');
+      return FirebaseFirestore.instanceFor(app: app);
+    } catch (e) {
+      // Not initialized, initialize it now using the options from firebase_options.dart
+      // We use 'android' options as a baseline (or detecting platform)
+      // Since we are in mobile app context, DefaultFirebaseOptions.currentPlatform is best.
+      
+      final masterApp = await Firebase.initializeApp(
+        name: 'CodeCenterMaster',
+        options: DefaultFirebaseOptions.currentPlatform, 
+        // Note: DefaultFirebaseOptions in this repo is configured for 'winitcode' 
+        // because it was generated from that project. Perfect!
+      );
+      return FirebaseFirestore.instanceFor(app: masterApp);
+    }
+  }
 
   // Stream of Cashback Codes
   Stream<List<CashbackCode>> getCodes() {
     print('FirestoreService: Fetching codes...');
-    // Aumentamos el límite para asegurar que obtenemos una mezcla reciente
-    // y ordenamos en memoria para corregir posibles inconsistencias de formato de fecha en la BD.
-    return _db.collection('codes')
+    
+    // Convert Future<Firestore> to Stream logic
+    // Since we need to await the DB, we use a Stream.fromFuture or async* 
+    // But we want to return a Stream that listen to snapshots.
+    
+    return Stream.fromFuture(_getDb()).asyncExpand((db) {
+       print('FirestoreService: Connected to DB Project: ${db.app.options.projectId}');
+       return db.collection('codes')
         .orderBy('date', descending: true)
         .limit(500) 
-        .snapshots()
-        .map((snapshot) {
+        .snapshots();
+    })
+    .map((snapshot) {
       print('FirestoreService: Received snapshot with ${snapshot.docs.length} documents.');
       
       List<CashbackCode> allParsedCodes = [];
@@ -136,8 +170,9 @@ class FirestoreService {
   // Get list of unique providers (site names)
   Future<List<String>> getUniqueProviders() async {
     try {
+      final db = await _getDb();
       // Fetch a reasonable number of recent codes to find active providers
-      final snapshot = await _db.collection('codes')
+      final snapshot = await db.collection('codes')
           .orderBy('date', descending: true)
           .limit(100)
           .get();
@@ -172,7 +207,8 @@ class FirestoreService {
   }
   // Submit a site suggestion
   Future<void> submitSiteSuggestion({required String name, required String url, required String reason}) async {
-    await _db.collection('site_suggestions').add({
+    final db = await _getDb();
+    await db.collection('site_suggestions').add({
       'name': name,
       'url': url,
       'reason': reason,
